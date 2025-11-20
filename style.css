@@ -62,14 +62,15 @@ body {
 }
 
 .globe-container {
-    flex: 1; /* responsive width */
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 #globe {
     width: 100%;
-    height: 100vh;
-    background-color: #000000;
-    align-items: left;  
+    height: 80vh; /* globe height */
 }
 
 .story-text {

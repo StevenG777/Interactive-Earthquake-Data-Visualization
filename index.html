@@ -22,8 +22,14 @@
 
     <!-- Header / Hero Section -->
     <header class="hero">
-        <h1>Earthquake Visualization Project</h1>
-        <p>Understanding magnitude, depth, and global impact</p>
+        <h1>Shaking Across Scales: Global Earthquake Trends and Regional Surveillance Gaps</h1>
+        <p>
+            On a planet of constant motions, hundreds of earthquakes ripple through across continents 
+            and fault lines. Although some regions rumble under a dense web of seismic sensors while others 
+            shake almost unnoticed, most never make headlines. How do we prevent such quakes from slipping 
+            through the cracks of our monitoring networks? We uncover the gaps in monitoring as we explore 
+            regional seismic coverage and map global earthquakes.
+        </p>
     </header>
 
     <!-- Main Content Wrapper -->
@@ -31,24 +37,24 @@
 
         <!-- Section 1: Map container -->
         <section id="map-section">
-            <h2>Global Earthquake Map</h2>
-            <div id="map"></div>
-        </section>
+            <div class="globe-container">
+                <div id="globe"></div>
+            </div>
 
-        <!-- Section 2: Info / Storytelling -->
-        <section id="story">
-            <h2>Why Do Earthquakes Happen?</h2>
-            <p>As you scroll, you will explore how magnitude, depth, and location affect earthquake impact.</p>
+            <div class="story-text">
+                <h2>Why Do Earthquakes Happen?</h2>
+                <p>Japan has a dense seismic network, while some regions of South America remain under-monitored.</p>
+            <p>Tracking quakes globally helps scientists and local governments prepare for future events.</p>
+            <p>Explore more data on how monitoring networks vary across continents.</p>
+            </div>
         </section>
 
     </main>
 
     <!-- JS Libraries -->
-    <script 
-        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-        integrity="sha256-o9N1j7kP6R/dwF3cY1clf8Bsu1MAyPdX4R1jv7u1W/k="
-        crossorigin="">
-    </script>
+    <script src="https://unpkg.com/three/build/three.min.js"></script>
+    <script src="https://unpkg.com/three-globe"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
     <!-- Your JavaScript -->
     <script src="script.js"></script>
