@@ -8,10 +8,22 @@ const tooltip = d3.select("#globe-tooltip");
 // ==========================
 
 const layers = [
-  { name: "Crust", color: "#d2c6a4ff", description: "…", thickness: 40 },
-  { name: "Lithosphere", color: "#8e8174ff", description: "…", thickness: 30 },
-  { name: "Asthenosphere", color: "#5b4c3dff", description: "…", thickness: 50 },
-  { name: "Mantle", color: "#3a3637ff", description: "…", thickness: 70 },
+  { name: "Crust", 
+    color: "#d2c6a4ff", 
+    description: "Earth's outermost & thinnest layer that stretches approximately 5km thick under ocean floor and 30km thick under continents", 
+    thickness: 40 },
+  { name: "Lithosphere", 
+    color: "#8e8174ff", 
+    description: "…", 
+    thickness: 30 },
+  { name: "Asthenosphere", 
+    color: "#5b4c3dff", 
+    description: "…", 
+    thickness: 50 },
+  { name: "Mantle", 
+    color: "#3a3637ff", 
+    description: "…", 
+    thickness: 70 },
 ];
 
 const width = 300;
