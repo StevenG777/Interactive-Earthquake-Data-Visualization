@@ -1,3 +1,91 @@
+// Vonoroi Diagram (Optional)
+    // const points = earthquakeData.map(d => {
+    //     const [x, y] = projection1([d.longitude, d.latitude]);
+    //     return { x, y, data: d };
+    // });
+
+    // // 2. Create Voronoi diagram
+    // const voronoi = d3.Delaunay
+    //     .from(points, d => d.x, d => d.y)
+    //     .voronoi([0, 0, width, height]);
+
+    // svg1.append("g")
+    //     .attr("class", "voronoi")
+    //     .selectAll("path")
+    //     .data(points)
+    //     .enter()
+    //     .append("path")
+    //     .attr("stroke", "#352dbcff")
+    //     .attr("d", (d, i) => voronoi.renderCell(i))
+    //     .style("fill", "none")
+    //     .style("pointer-events", "all")
+    //     .on("mouseover", (event, d) => {
+    //         let location = d.data.place;
+    //         let distance = "";
+
+    //         if (d.data.place.includes(",")) {
+    //             const parts = d.data.place.split(",");
+    //             distance = parts[0].trim();
+    //             location = parts[1].trim();
+    //         }
+
+    //         tooltip.html(`
+    //             <strong>${location}</strong><br>
+    //             ${distance ? `* Distance: ${distance}<br>` : ""}
+    //             * Mag: ${d.data.mag != null ? d.data.mag : "Unknown"}
+    //         `)
+    //         .style("display", "block")
+    //         .style("left", (event.pageX + 10) + "px")
+    //         .style("top", (event.pageY + 10) + "px");
+    //     })
+    //     .on("mousemove", event => {
+    //         tooltip.style("left", (event.pageX + 10) + "px")
+    //             .style("top", (event.pageY + 10) + "px");
+    //     })
+    //     .on("mouseout", () => {
+    //         tooltip.style("display", "none");
+    //     });
+
+// ==========================
+// DATA LOADING
+// ==========================
+async function loadCSV(path, sampleSize = null) {
+    // Download CSV text through Fetch API (HTTP Request)
+    const response = await fetch(path);
+    // Extract the content
+    const csvText = await response.text();
+
+    // Parse CSV using PapaParse library
+    // Keep header, convert to number automatically, skip empty
+    const result = Papa.parse(csvText, {
+        header: true,
+        dynamicTyping: true,
+        skipEmptyLines: true,
+    });
+    // Extract the content
+    let data = result.data;
+
+    // Choose a random subset by input the sample size and shuffle it
+    if (sampleSize !== null && sampleSize < data.length) {
+        data = data
+            .sort(() => Math.random() - 0.5)
+            .slice(0, sampleSize);
+    }
+
+    return data;
+}
+
+// Define another function because of async/await structure, annoying
+async function loadData(sample_Size = null) {
+    const sample = await loadCSV("data.csv", sample_Size);
+    console.log("Random 100:", sample);
+}
+loadData()
+
+
+// ==========================
+// DOT FOR PAGES
+// ==========================
 const dots = document.querySelectorAll(".nav-dot");
 const sections = [document.querySelector(".hero"),
                   document.getElementById("earth-structure-section"),
@@ -86,6 +174,7 @@ layers.forEach(layer => {
     .text(layer.name);
 });
 
+
 // ==========================
 // PAGE 3: GLOBE 1
 // ==========================
@@ -94,6 +183,7 @@ const path1 = d3.geoPath();
 const projection1 = d3.geoOrthographic().clipAngle(90);
 let rotate1 = [0, -20];
 let lastX1, lastY1;
+let earthquakesGroup;
 
 svg1.append("path")
   .datum({ type: "Sphere" })
@@ -101,6 +191,12 @@ svg1.append("path")
   .attr("fill", "#000")
   .attr("stroke", "#fff")
   .attr("stroke-width", 0.5);
+
+svg1.append("defs")
+    .append("clipPath")
+    .attr("id", "front-hemisphere")
+    .append("path")
+    .attr("class", "globe-clip");
 
 const countriesGroup1 = svg1.append("g").attr("class", "countries");
 
@@ -131,32 +227,107 @@ d3.json("https://unpkg.com/world-atlas@2/countries-110m.json").then(worldData =>
         tooltip.style("display","none");
       });
 
-  resizeGlobe1();
+    resizeGlobe1();
+    plotEarthquakesPoints();
 });
 
 svg1.call(d3.drag()
-  .on("start", event => { lastX1 = event.x; lastY1 = event.y; })
-  .on("drag", event => {
-    const dx = event.x - lastX1;
-    const dy = event.y - lastY1;
-    lastX1 = event.x; lastY1 = event.y;
-    rotate1[0] += dx * 0.7;
-    rotate1[1] -= dy * 0.7;
-    rotate1[1] = Math.max(-90, Math.min(90, rotate1[1]));
-    projection1.rotate(rotate1);
-    svg1.selectAll("path").attr("d", path1);
-  })
+    .on("start", event => { lastX1 = event.x; lastY1 = event.y; })
+    .on("drag", event => {
+        const dx = event.x - lastX1;
+        const dy = event.y - lastY1;
+        lastX1 = event.x; lastY1 = event.y;
+        rotate1[0] += dx * 0.7;
+        rotate1[1] -= dy * 0.7;
+        rotate1[1] = Math.max(-90, Math.min(90, rotate1[1]));
+        projection1.rotate(rotate1);
+
+        svg1.selectAll("path").attr("d", path1);
+        updateEarthquakes();
+        updateClipPath();
+    })
 );
 
-function resizeGlobe1(){
-  const cw = svg1.node().parentNode.getBoundingClientRect().width;
-  svg1.attr("width", cw).attr("height", cw);
-  projection1.translate([cw/2, cw/2]).scale(cw/2 * 0.9);
-  path1.projection(projection1);
-  svg1.select(".globe-sphere").attr("d", path1);
-  svg1.selectAll(".country").attr("d", path1);
-}
 window.addEventListener("resize", resizeGlobe1);
+
+async function plotEarthquakesPoints(sample_Size = null) {
+    const earthquakeData = (await loadCSV("data.csv", sample_Size))
+        .filter(d => 
+            d.mag != null && !isNaN(d.mag) &&
+            d.latitude != null && !isNaN(d.latitude) &&
+            d.longitude != null && !isNaN(d.longitude)
+        );
+
+    earthquakesGroup = svg1.append("g")
+        .attr("class", "earthquakes")
+        .attr("clip-path", "url(#front-hemisphere)");
+
+    earthquakesGroup.selectAll("circle")
+        .data(earthquakeData)
+        .enter()
+        .append("circle")
+        .attr("cx", d => projection1([d.longitude, d.latitude])[0])
+        .attr("cy", d => projection1([d.longitude, d.latitude])[1])
+        .attr("r", d => Math.sqrt(Math.abs(d.mag)) * 2)
+        .attr("fill", "red")
+        .attr("stroke", "#fff")
+        .attr("stroke-width", 0.3)
+        .attr("opacity", 0.7)
+        .on("mouseover", (event, d) => {
+            let location = d.place;
+            let distance = "";
+
+            if (d.place.includes(",")) {
+                const parts = d.place.split(",");
+                distance = parts[0].trim();       // e.g., "17 km E of Amahai"
+                location = parts[1].trim();       // e.g., "Indonesia"
+            }
+
+            tooltip.html(`
+                <strong>${location}</strong><br>
+                ${distance ? `* Distance: ${distance}<br>` : ""}
+                * Mag: ${d.mag != null ? d.mag : "Unknown"}
+            `)
+            .style("display", "block")
+            .style("left", (event.pageX + 10) + "px")
+            .style("top", (event.pageY + 10) + "px");
+        })
+        .on("mousemove", event => {
+            tooltip.style("left", (event.pageX + 10) + "px")
+                   .style("top", (event.pageY + 10) + "px");
+        })
+        .on("mouseout", () => {
+            tooltip.style("display", "none");
+        });
+}
+
+// Function to resize global to fit current container
+function resizeGlobe1() {
+    const containerWidth = svg1.node().parentNode.getBoundingClientRect().width;
+    svg1.attr("width", containerWidth).attr("height", containerWidth);
+    projection1.translate([containerWidth / 2, containerWidth / 2])
+               .scale(containerWidth / 2 * 0.9);
+    path1.projection(projection1);
+    svg1.select(".globe-sphere").attr("d", path1);
+    svg1.selectAll(".country").attr("d", path1);
+
+    updateEarthquakes();
+    updateClipPath(); 
+}
+
+// Function to update earthquakes on rotation or resize
+function updateEarthquakes() {
+    svg1.selectAll(".earthquakes circle")
+        .attr("cx", d => projection1([d.longitude, d.latitude])[0])
+        .attr("cy", d => projection1([d.longitude, d.latitude])[1]);
+}
+
+// Function to show data in front sphere
+function updateClipPath() {
+    svg1.select(".globe-clip")
+        .attr("d", path1({ type: "Sphere" }));
+}
+
 
 // ==========================
 // PAGE 4: GLOBE 2 + CONNECTOR
