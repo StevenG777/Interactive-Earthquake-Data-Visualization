@@ -1,55 +1,8 @@
-// Vonoroi Diagram (Optional)
-    // const points = earthquakeData.map(d => {
-    //     const [x, y] = projection1([d.longitude, d.latitude]);
-    //     return { x, y, data: d };
-    // });
-
-    // // 2. Create Voronoi diagram
-    // const voronoi = d3.Delaunay
-    //     .from(points, d => d.x, d => d.y)
-    //     .voronoi([0, 0, width, height]);
-
-    // svg1.append("g")
-    //     .attr("class", "voronoi")
-    //     .selectAll("path")
-    //     .data(points)
-    //     .enter()
-    //     .append("path")
-    //     .attr("stroke", "#352dbcff")
-    //     .attr("d", (d, i) => voronoi.renderCell(i))
-    //     .style("fill", "none")
-    //     .style("pointer-events", "all")
-    //     .on("mouseover", (event, d) => {
-    //         let location = d.data.place;
-    //         let distance = "";
-
-    //         if (d.data.place.includes(",")) {
-    //             const parts = d.data.place.split(",");
-    //             distance = parts[0].trim();
-    //             location = parts[1].trim();
-    //         }
-
-    //         tooltip.html(`
-    //             <strong>${location}</strong><br>
-    //             ${distance ? `* Distance: ${distance}<br>` : ""}
-    //             * Mag: ${d.data.mag != null ? d.data.mag : "Unknown"}
-    //         `)
-    //         .style("display", "block")
-    //         .style("left", (event.pageX + 10) + "px")
-    //         .style("top", (event.pageY + 10) + "px");
-    //     })
-    //     .on("mousemove", event => {
-    //         tooltip.style("left", (event.pageX + 10) + "px")
-    //             .style("top", (event.pageY + 10) + "px");
-    //     })
-    //     .on("mouseout", () => {
-    //         tooltip.style("display", "none");
-    //     });
-
 // ==========================
 // DATA LOADING
 // ==========================
-async function loadCSV(path, sampleSize = null) {
+// Load earthquake data from CSV file (Defined Function)
+async function loadCSV(path, sampleSize) {
     // Download CSV text through Fetch API (HTTP Request)
     const response = await fetch(path);
     // Extract the content
@@ -75,12 +28,14 @@ async function loadCSV(path, sampleSize = null) {
     return data;
 }
 
-// Define another function because of async/await structure, annoying
-async function loadData(sample_Size = null) {
-    const sample = await loadCSV("data.csv", sample_Size);
-    console.log("Random 100:", sample);
-}
-loadData()
+// Call the CSV loader function (Caller Function)
+const earthquakeData = (await loadCSV("earthquakes.csv", 1000))
+    .filter(d => 
+        d.mag != null && !isNaN(d.mag) &&
+        d.latitude != null && !isNaN(d.latitude) &&
+        d.longitude != null && !isNaN(d.longitude)
+    );
+console.log(earthquakeData)
 
 
 // ==========================
@@ -146,11 +101,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 // ==========================
-// TOOLTIP
-// ==========================
-const tooltip = d3.select("#globe-tooltip");
-
-// ==========================
 // PAGE 2: EARTH LAYERS PLOT
 // ==========================
 const layers = [
@@ -206,17 +156,26 @@ layers.forEach(layer => {
 
 
 // ==========================
+// TOOLTIP
+// ==========================
+const tooltip = d3.select("#globe-tooltip");
+
+
+// ==========================
 // PAGE 3: GLOBE 1
 // ==========================
 const svg1 = d3.select("#globe-svg");
 const path1 = d3.geoPath();
-const quakeHighlight = "#b30000";   // dark red
+const quakeHighlight = "#b30000";
+
+const canvas = document.getElementById("globe-canvas");
+const ctx = canvas.getContext("2d");
 
 const projection1 = d3.geoOrthographic().clipAngle(90);
 let rotate1 = [0, -20];
 let lastX1, lastY1;
-let earthquakesGroup;
 
+// Append SVG element for Globe
 svg1.append("path")
   .datum({ type: "Sphere" })
   .attr("class", "globe-sphere")
@@ -224,45 +183,40 @@ svg1.append("path")
   .attr("stroke", "#fff")
   .attr("stroke-width", 0.5);
 
-svg1.append("defs")
-    .append("clipPath")
-    .attr("id", "front-hemisphere")
-    .append("path")
-    .attr("class", "globe-clip");
+// Load country geographic locations & name data to globe (Caller Function)
+const countryData = d3.json("https://unpkg.com/world-atlas@2/countries-110m.json")
+countryData.then(worldData => {
+    const countries = topojson.feature(worldData, worldData.objects.countries).features;
 
-const countriesGroup1 = svg1.append("g").attr("class", "countries");
+    svg1.append("g").attr("class", "countries").selectAll(".country")
+        .data(countries)
+        .enter()
+        .append("path")
+        .attr("class", "country")
+        .attr("fill", "#000")
+        .attr("stroke", "#fff")
+        .attr("stroke-width", 0.5)
+        .on("mouseover", (event, d) => {
+            d3.select(event.currentTarget).attr("fill", "#2156e9ff");
+            tooltip.text(d.properties.name)
+                    .style("display","block")
+                    .style("left", (event.pageX + 10) + "px")
+                    .style("top",  (event.pageY + 10) + "px");
+        })
+        .on("mousemove", event => {
+            tooltip.style("left", (event.pageX + 10) + "px")
+                    .style("top",  (event.pageY + 10) + "px");
+        })
+        .on("mouseout", (event) => {
+            d3.select(event.currentTarget).attr("fill", "#000");
+            tooltip.style("display","none");
+        });
 
-d3.json("https://unpkg.com/world-atlas@2/countries-110m.json").then(worldData => {
-  const countries = topojson.feature(worldData, worldData.objects.countries).features;
-
-  countriesGroup1.selectAll(".country")
-    .data(countries)
-    .enter()
-    .append("path")
-      .attr("class", "country")
-      .attr("fill", "#000")
-      .attr("stroke", "#fff")
-      .attr("stroke-width", 0.5)
-      .on("mouseover", (event, d) => {
-        d3.select(event.currentTarget).attr("fill", "#2156e9ff");
-        tooltip.text(d.properties.name)
-               .style("display","block")
-               .style("left", (event.pageX + 10) + "px")
-               .style("top",  (event.pageY + 10) + "px");
-      })
-      .on("mousemove", event => {
-        tooltip.style("left", (event.pageX + 10) + "px")
-               .style("top",  (event.pageY + 10) + "px");
-      })
-      .on("mouseout", (event) => {
-        d3.select(event.currentTarget).attr("fill", "#000");
-        tooltip.style("display","none");
-      });
-
-    resizeGlobe1();
     plotEarthquakesPoints();
+    resizeGlobe1();
 });
 
+// Make drag-able & rotate-able action available to globe (Caller Function)
 svg1.call(d3.drag()
     .on("start", event => { lastX1 = event.x; lastY1 = event.y; })
     .on("drag", event => {
@@ -274,38 +228,77 @@ svg1.call(d3.drag()
         rotate1[1] = Math.max(-90, Math.min(90, rotate1[1]));
         projection1.rotate(rotate1);
 
-        svg1.selectAll("path").attr("d", path1);
-        updateEarthquakes();
-        updateClipPath();
+        // svg1.selectAll("path").attr("d", path1);
+        svg1.selectAll(".country").attr("d", path1);
+        // svg1.selectAll(".earthquakes circle")
+        //   .attr("opacity", d => isPointVisible(d.longitude, d.latitude, rotate1) ? 0.8 : 0);
+        drawEarthquakesCanvas();
+
+        // updateEarthquakes();
+        // updateClipPath();
+    })
+    .on("end", () => {
+        // After drag ends, update full projection
+        svg1.selectAll(".country").attr("d", path1);
+        // updateEarthquakes();
+        drawEarthquakesCanvas();
     })
 );
 
+// Tooltip stuff
+svg1.on("mousemove", (event) => {
+    const [mx, my] = d3.pointer(event);
+
+    const hovered = earthquakeData.find(d => {
+        const p = projection1([d.longitude, d.latitude]);
+        if (!p) return false;
+        const [x, y] = p;
+        const r = Math.sqrt(Math.abs(d.mag)) * 2.5;
+        return Math.hypot(mx - x, my - y) < r + 3;
+    });
+
+    if (hovered) {
+        tooltip
+            .style("display", "block")
+            .style("left", (event.pageX + 10) + "px")
+            .style("top", (event.pageY + 10) + "px")
+            .html(`
+                <strong>${hovered.place}</strong><br>
+                Mag: ${hovered.mag}
+            `);
+    } else {
+        tooltip.style("display", "none");
+    }
+});
+
+// Resize within some unknown window (Caller Event Listener)
 window.addEventListener("resize", resizeGlobe1);
 
-async function plotEarthquakesPoints(sample_Size = null) {
-    const earthquakeData = (await loadCSV("data.csv", sample_Size))
-        .filter(d => 
-            d.mag != null && !isNaN(d.mag) &&
-            d.latitude != null && !isNaN(d.latitude) &&
-            d.longitude != null && !isNaN(d.longitude)
-        );
-
-    earthquakesGroup = svg1.append("g")
+// Function to plot earthquake spot to globe (Definer Function)
+async function plotEarthquakesPoints() {
+    let earthquakesGroup = svg1.append("g")
         .attr("class", "earthquakes")
-        .attr("clip-path", "url(#front-hemisphere)");
 
     earthquakesGroup.selectAll("circle")
         .data(earthquakeData)
         .enter()
         .append("circle")
-        .attr("cx", d => projection1([d.longitude, d.latitude])[0])
-        .attr("cy", d => projection1([d.longitude, d.latitude])[1])
+        .attr("cx", d => {
+            const p = projection1([d.longitude, d.latitude])
+            d._x = p[0];
+            return d._x
+        })
+        .attr("cy", d => {
+            const p = projection1([d.longitude, d.latitude])
+            d._y = p[1];
+            return d._y
+        })
         .attr("r", d => Math.sqrt(Math.abs(d.mag)) * 4)
         .attr("fill", "red")
         .attr("stroke", "#fff")
         .attr("stroke-width", 0.3)
         .attr("opacity", d => 
-        isPointVisible(d.longitude, d.latitude, rotate1) ? 0.8 : 0)
+            isPointVisible(d.longitude, d.latitude, rotate1) ? 0.8 : 0)
         .on("mouseover", function(event, d) {
             // enlarge dot
             d3.select(this)
@@ -346,38 +339,69 @@ async function plotEarthquakesPoints(sample_Size = null) {
             .attr("fill", "red")
             .attr("r", Math.sqrt(d.mag) * 4);
     });
+
+    // drawEarthquakesCanvas();
 }
 
-// Function to resize global to fit current container
+function drawEarthquakesCanvas() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    earthquakeData.forEach(d => {
+        const p = projection1([d.longitude, d.latitude]);
+        if (!p) return;
+
+        const [x, y] = p;
+
+        // Hemisphere check (same logic)
+        if (!isPointVisible(d.longitude, d.latitude, rotate1)) return;
+
+        const radius = Math.sqrt(Math.abs(d.mag)) * 2.5;
+
+        ctx.beginPath();
+        ctx.arc(x, y, radius, 0, 2 * Math.PI);
+        ctx.fillStyle = "rgba(255,0,0,0.8)";
+        ctx.fill();
+    });
+}
+
+// Function to resize global to fit current container (Definer Function)
+// function resizeGlobe1() {
+//     const containerWidth = svg1.node().parentNode.getBoundingClientRect().width;
+//     svg1.attr("width", containerWidth).attr("height", containerWidth);
+//     projection1.translate([containerWidth / 2, containerWidth / 2])
+//                .scale(containerWidth / 2 * 0.9);
+//     path1.projection(projection1);
+//     svg1.select(".globe-sphere").attr("d", path1);
+//     svg1.selectAll(".country").attr("d", path1);
+
+//     updateEarthquakes();
+//     // updateClipPath(); 
+// }
+
 function resizeGlobe1() {
     const containerWidth = svg1.node().parentNode.getBoundingClientRect().width;
+
     svg1.attr("width", containerWidth).attr("height", containerWidth);
-    projection1.translate([containerWidth / 2, containerWidth / 2])
-               .scale(containerWidth / 2 * 0.9);
+
+    // Canvas must match SVG size
+    canvas.width = containerWidth;
+    canvas.height = containerWidth;
+
+    projection1
+        .translate([containerWidth / 2, containerWidth / 2])
+        .scale(containerWidth / 2 * 0.9);
+
     path1.projection(projection1);
+
+    // Update SVG paths
     svg1.select(".globe-sphere").attr("d", path1);
     svg1.selectAll(".country").attr("d", path1);
 
-    updateEarthquakes();
-    updateClipPath(); 
+    drawEarthquakesCanvas();
 }
 
-// Function to update earthquakes on rotation or resize
-function updateEarthquakes() {
-    svg1.selectAll(".earthquakes circle")
-        .attr("cx", d => projection1([d.longitude, d.latitude])[0])
-        .attr("cy", d => projection1([d.longitude, d.latitude])[1])
-        .attr("opacity", d =>
-            isPointVisible(d.longitude, d.latitude, rotate1) ? 0.8 : 0
-        );
-}
 
-// Function to show data in front sphere
-function updateClipPath() {
-    svg1.select(".globe-clip")
-        .attr("d", path1({ type: "Sphere" }));
-}
-
+// Function to determine if an earthquake point should be visible or not (Definer Function)
 function isPointVisible(lon, lat, rotate) {
     const λ = lon * Math.PI/180;
     const φ = lat * Math.PI/180;
@@ -391,11 +415,123 @@ function isPointVisible(lon, lat, rotate) {
     return cosc > 0;  // visible hemisphere
 }
 
+// Function to update earthquakes on rotation or resize (Definer Function)
+function updateEarthquakes() {
+    svg1.selectAll(".earthquakes circle")
+        .attr("cx", d => projection1([d.longitude, d.latitude])[0])
+        .attr("cy", d => projection1([d.longitude, d.latitude])[1])
+        .attr("opacity", d =>
+            isPointVisible(d.longitude, d.latitude, rotate1) ? 0.8 : 0
+        );
+}
+
+function updateEarthquakesOnce() {
+    earthquakesGroup.selectAll("circle")
+        .attr("cx", d => {
+            const p = projection1([d.longitude, d.latitude]);
+            d._x = p[0];
+            return d._x;
+        })
+        .attr("cy", d => {
+            const p = projection1([d.longitude, d.latitude]);
+            d._y = p[1];
+            return d._y;
+        });
+}
+
+
+// ==========================
+// PAGE 3: GLOBE 1.5
+// ==========================
+
+const svgStation = d3.select("#globe-svg-station");
+const pathStation = d3.geoPath();
+
+const projectionStation = d3.geoOrthographic().clipAngle(90);
+let rotateStation = [0, -20];
+let lastXStation, lastYStation;
+
+// Append SVG element for Globe
+svgStation.append("path")
+  .datum({ type: "Sphere" })
+  .attr("class", "globe-sphere")
+  .attr("fill", "#000")
+  .attr("stroke", "#fff")
+  .attr("stroke-width", 0.5);
+
+// Load country geographic locations & name data to globe (Caller Function)
+countryData.then(worldData => {
+    const countries = topojson.feature(worldData, worldData.objects.countries).features;
+
+    svgStation.append("g").attr("class", "countries").selectAll(".country")
+        .data(countries)
+        .enter()
+        .append("path")
+        .attr("class", "country")
+        .attr("fill", "#000")
+        .attr("stroke", "#fff")
+        .attr("stroke-width", 0.5)
+        .on("mouseover", (event, d) => {
+            d3.select(event.currentTarget).attr("fill", "#2156e9ff");
+            tooltip.text(d.properties.name)
+                    .style("display","block")
+                    .style("left", (event.pageX + 10) + "px")
+                    .style("top",  (event.pageY + 10) + "px");
+        })
+        .on("mousemove", event => {
+            tooltip.style("left", (event.pageX + 10) + "px")
+                    .style("top",  (event.pageY + 10) + "px");
+        })
+        .on("mouseout", (event) => {
+            d3.select(event.currentTarget).attr("fill", "#000");
+            tooltip.style("display","none");
+        });
+
+    plotEarthquakesPoints();
+    resizeGlobe1();
+});
+
+// Make drag-able & rotate-able action available to globe (Caller Function)
+svgStation.call(d3.drag()
+    .on("start", event => { lastX1 = event.x; lastY1 = event.y; })
+    .on("drag", event => {
+        const dx = event.x - lastX1;
+        const dy = event.y - lastY1;
+        lastX1 = event.x; lastY1 = event.y;
+        rotate1[0] += dx * 0.7;
+        rotate1[1] -= dy * 0.7;
+        rotate1[1] = Math.max(-90, Math.min(90, rotate1[1]));
+        projection1.rotate(rotate1);
+
+        // svg1.selectAll("path").attr("d", path1);
+        svg1.selectAll(".country").attr("d", pathStation);
+        // svg1.selectAll(".earthquakes circle")
+        //   .attr("opacity", d => isPointVisible(d.longitude, d.latitude, rotate1) ? 0.8 : 0);
+        drawEarthquakesCanvas();
+
+        // updateEarthquakes();
+        // updateClipPath();
+    })
+    .on("end", () => {
+        // After drag ends, update full projection
+        svg1.selectAll(".country").attr("d", pathStation);
+        // updateEarthquakes();
+        drawEarthquakesCanvas();
+    })
+);
+
+
+
 // ==========================
 // PAGE 4: GLOBE 2 
 // ==========================
+
+
+// Container for globe
 const svg2 = d3.select("#globe-svg-2");
+// Path generator that convert GeoJSON data to SVG path string
 const path2 = d3.geoPath();
+// Define Azimuthal projections (Sphere --> Plane) 
 const projection2 = d3.geoOrthographic().clipAngle(90);
 let rotate2 = [0, -20];
 let lastX2, lastY2;
@@ -483,5 +619,3 @@ window.addEventListener("resize", resizeGlobe2);
 window.addEventListener("scroll", () => {
   if (selectedCountry) drawConnector();
 });
-
-
