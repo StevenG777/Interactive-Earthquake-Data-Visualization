@@ -400,7 +400,7 @@ function isPointVisible(lon, lat, rotate) {
 }
 
 // ==========================
-// PAGE 4: GLOBE 2 + CONNECTOR
+// PAGE 4: GLOBE 2 
 // ==========================
 const svg2 = d3.select("#globe-svg-2");
 const path2 = d3.geoPath();
@@ -473,67 +473,10 @@ d3.json("https://unpkg.com/world-atlas@2/countries-110m.json").then(worldData =>
           .attr("stroke", "#000")
           .attr("stroke-width", 1);
 
-        drawConnector();
       });
 
   resizeGlobe2();
 });
-
-// Connector Globe 2 + Country
-function drawConnector(){
-  // remove existing
-  if (connectorPath) connectorPath.remove();
-
-  const globeSvg = d3.select("#globe-svg-2").node();
-  const countrySvg = d3.select("#country-map").node();
-  const gBBox = globeSvg.getBoundingClientRect();
-  const cBBox = countrySvg.getBoundingClientRect();
-
-  const startX = gBBox.x + gBBox.width;
-  const startY = gBBox.y + gBBox.height / 2;
-  const endX = cBBox.x;
-  const endY = cBBox.y + cBBox.height / 2;
-
-  const connectorSvg = d3.select("#line-connector");
-
-  connectorPath = connectorSvg.append("path")
-    .attr("d", `M${startX},${startY} L${endX},${endY}`)
-    .attr("fill", "none")
-    .attr("stroke", "#fff")
-    .attr("stroke-width", 2)
-    .attr("stroke-dasharray", function() {
-      const len = this.getTotalLength();
-      return `${len} ${len}`;
-    })
-    .attr("stroke-dashoffset", function() {
-      return this.getTotalLength();
-    });
-
-  connectorPath.transition()
-    .duration(1000)
-    .ease(d3.easeLinear)
-    .attr("stroke-dashoffset", 0);
-}
-
-svg2.call(d3.drag()
-  .on("start", event => { lastX2 = event.x; lastY2 = event.y; })
-  .on("drag", event => {
-    const dx = event.x - lastX2;
-    const dy = event.y - lastY2;
-    lastX2 = event.x; lastY2 = event.y;
-    rotate2[0] += dx * 0.7;
-    rotate2[1] -= dy * 0.7;
-    rotate2[1] = Math.max(-90, Math.min(90, rotate2[1]));
-    projection2.rotate(rotate2);
-    svg2.selectAll("path").attr("d", path2);
-
-    // remove connector when globe moves
-    if (connectorPath) {
-      connectorPath.remove();
-      connectorPath = null;
-    }
-  })
-);
 
 function resizeGlobe2(){
   const cw = svg2.node().parentNode.getBoundingClientRect().width;
@@ -543,8 +486,6 @@ function resizeGlobe2(){
   svg2.select(".globe-sphere").attr("d", path2);
   svg2.selectAll(".country").attr("d", path2);
 
-  // optionally redraw connector if country is selected
-  if (selectedCountry) drawConnector();
 }
 window.addEventListener("resize", resizeGlobe2);
 window.addEventListener("scroll", () => {
