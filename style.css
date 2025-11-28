@@ -79,7 +79,7 @@ section, .hero {
 /* Earth Layers */
 .full-page {
     width: 100vw;
-    height: 100vh;
+    height: fit-content;
     display: flex;
     flex-wrap: nowrap;
     flex-direction: column;
@@ -90,15 +90,17 @@ section, .hero {
 
 /* Page 2 Earth Layers */
 .info-box {
-  margin-top: 1rem;
-  color: #fff;
-  background: rgba(0,0,0,0.6);
-  padding: 8px 12px;
-  border-radius: 6px;
-  font-size: 1rem;
-  max-width: 80%;
-  text-align: center;
-  flex-wrap: nowrap;
+    margin-top: 1rem;
+    color: #fff;
+    background: rgba(247, 20, 20, 0.6);
+    stroke: rgba(255, 255, 255, 0.6);
+    stroke-width: 5px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 1rem;
+    max-width: 80%;
+    text-align: center;
+    flex-wrap: nowrap;
 }
 
 .layer-slice {
@@ -112,16 +114,17 @@ section, .hero {
 }
 
 #earth-layer-info {
-  margin-top: 1rem;
-  padding: 8px;
-  background: rgba(0,0,0,0.6);
-  color: white;
-  border-radius: 4px;
-  font-size: 1rem;
-  text-align: center;
-  width: fit-content;
+    margin-top: 1;
+    margin-bottom: 50rem;
+    padding: 8px 14px;
+    background: rgba(0,0,0,0.6);
+    color: white;
+    border-radius: 4px;
+    font-size: 1rem;
+    text-align: center;
+    max-width: 80%;
+    white-space: pre-line;
 }
-
 
 /* Add subtle gradient background */
 #earth-structure-section {
@@ -143,10 +146,67 @@ section, .hero {
     }
 }
 
+/* Force SVG to scale responsively but stay capped */
+#earth-structure-plot svg {
+    /* width: min(70vw, 1600px);
+    height: auto; */
+    max-width: 450;
+    max-height: 330;
+    display: block;
+    margin: 1.5rem auto 0.5rem auto;  /* top, right/left, bottom */
+}
+
+.earth-layer-label {
+    fill: #fff;
+    font-weight: 600;
+    pointer-events: none;
+
+    /* CONTROLLED scaling */
+    font-size: clamp(1rem, 1.4vw, .5rem);
+
+    /* outline */
+    paint-order: stroke;
+    stroke: rgba(0, 0, 0, 0.8);
+    stroke-width: 3px;
+}
 
 /* ========================== */
 /* MAP + GLOBE SECTION */
 /* ========================== */
+.legend-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin: 10px;
+  font-family: sans-serif;
+  color: #fff;
+}
+
+.legend-title {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-size: 12px;
+  margin-right: 6px;
+}
+
+.legend-bar {
+  width: 16px;
+  height: 150px; /* adjust as needed */
+  border-radius: 4px;
+  background: linear-gradient(to top, pink, red); /* vertical gradient */
+  border: 1px solid #fff;
+  margin-right: 6px;
+}
+
+.legend-labels {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 150px; /* same as bar */
+  font-size: 11px;
+}
+
+
 #map-section, #country-detail-section {
     display: flex;
     flex-wrap: nowrap;
@@ -159,7 +219,6 @@ section, .hero {
 #map-section {
     background: linear-gradient(to bottom, #475a83, #1f2a3f);
 }
-
 
 /* Globe containers */
 #map-section .globe-container,
@@ -188,7 +247,7 @@ section, .hero {
 .story-text {
     flex: 0 1 55%;
     min-width: 150px;
-    max-width: 600px;
+    max-width: 500px;
     margin-left: 2rem;
     color: #f7f7f7;
     text-align: left;

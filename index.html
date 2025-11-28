@@ -26,15 +26,66 @@
     </p>
   </header>
 
-  <!-- Page 2 (Earth layers)-->
+  <!-- Page 2 (Earth layers)
   <section id="earth-structure-section" class="full-page">
     <h2>Layers of Earth</h2>
     <div id="earth-structure-plot"></div>
     <div id="earth-layer-info" class="info-box">Hover over a layer to see details.</div>
+  </section> -->
+
+  <!-- Page 2 (Earth layers)-->
+  <section id="earth-structure-section" class="full-page image-page">
+    <h2>Layers of Earth</h2>
+
+    <!-- <div class="image-wrap image-hotspot-wrap" id="earth-image-wrap">
+      <img
+        id="earth-structure-img"
+        src="images/earth.png"
+        alt="Cross-section illustration of Earth's layers: crust, lithosphere, asthenosphere, mantle, core."
+        loading="lazy"
+      />
+
+      Invisible hotspots (no visible markers). Tweak left/top percentages so each covers a layer -->
+
+      <!-- <button class="hotspot invisible" data-name="Crust"
+              data-desc="This is us! It's the solid outermost, rocky layer that contains the continental and oceanic floor." style="left:20%; top:50%;"></button>
+
+      <button class="hotspot invisible" data-name="Lithosphere (li·thuh·sfeer)"
+              data-desc="The outermost rigid mechanical layer that is broken into tectonic plates; these move due to convection currents in the mantle underneath. " style="left:45%; top:50%;"></button>
+
+      <button class="hotspot invisible" data-name="Asthenosphere (uhs·theh·nuh·sfeer)"
+              data-desc="This ductile region of the upper mantle flows slowly; as layers lay atop one another, differing weights cause plains to slowly shift over long time periods. " style="left:55%; top:50%;"></button>
+
+      <button class="hotspot invisible" data-name="Upper Mantle"
+              data-desc="Hot, convecting rock that extends approximately 420 miles deep, making up most of Earth’s volume." style="left:60%; top:50%;"></button>
+
+      <button class="hotspot invisible" data-name="Lower Mantle"
+              data-desc="A middle layer of silicate rock that slowly deforms over geological timescales given the constant immense pressure it endures." style="left:70%; top:50%;"></button>
+
+      <button class="hotspot invisible" data-name="Outer Core"
+              data-desc="Molten iron and nickle that generates the Earth's magnetic field through convection currents; ranges from 72k to 90k degrees Fahrenheit." style="left:75%; top:50%;"></button>
+
+              <button class="hotspot invisible" data-name="Inner Core"
+              data-desc="A solid sphere of approximately 2260 miles in diameter; it endures immense pressure, allowing it to reach temperatures higher than the sun's surface." style="left:83%; top:50%;"></button>
+    </div> -->
+    <div id="earth-structure-plot"></div>
+    <div id="earth-layer-info" class="info-box">
+      Let's show you a bit more about Earth's Layers! Hover over an individual layer for more details.
+    </div>
   </section>
+
 
   <!-- Page 3 (Globe 1)-->
   <section id="map-section">
+    <div class="legend-container">
+      <div class="legend-title">Magnitude</div>
+      <div class="legend-bar"></div>
+      <div class="legend-labels">
+      <span id="legend-max">0</span>
+      <span id="legend-mid">0</span>
+      <span id="legend-min">0</span>
+    </div>
+    </div>
     <div class="globe-container">
         <svg id="globe-svg"></svg>
     </div>
@@ -47,7 +98,6 @@
       <p>Tracking quakes globally helps scientists and local governments prepare for future events.</p>
     </div>
   </section>
-
   <div id="globe-tooltip">Drag to rotate</div>
 
   <!-- Page 4 (Globe 2 + Country) -->

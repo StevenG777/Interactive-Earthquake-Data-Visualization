@@ -71,55 +71,132 @@ console.log(sphereData)
 // ==========================
 // DOT FOR PAGES
 // ==========================
-const dots = document.querySelectorAll(".nav-dot");
-const sections = [document.querySelector(".hero"),
-                  document.getElementById("earth-structure-section"),
-                  document.getElementById("map-section"),
-                  document.getElementById("country-detail-section")];
+document.addEventListener("DOMContentLoaded", () => {
+    const dots = document.querySelectorAll(".nav-dot");
 
-// Scroll to section on dot click
-dots.forEach((dot, i) => {
-  dot.addEventListener("click", () => {
-    sections[i].scrollIntoView({ behavior: "smooth" });
-  });
-});
+    const updateActiveDot = () => {
+        let closestDot = null;
+        let closestDistance = Infinity;
 
-// Highlight active dot on scroll
-window.addEventListener("scroll", () => {
-  const scrollPos = window.scrollY + window.innerHeight / 2;
+        dots.forEach(dot => {
+            const targetId = dot.getAttribute("data-target");
+            const targetEl = document.getElementById(targetId);
+            if (!targetEl) return;
 
-  sections.forEach((sec, idx) => {
-    const top = sec.offsetTop;
-    const bottom = top + sec.offsetHeight;
+            // distance from top of viewport to top of section
+            const rect = targetEl.getBoundingClientRect();
+            const distance = Math.abs(rect.top);
 
-    if (scrollPos >= top && scrollPos < bottom) {
-      dots.forEach(d => d.classList.remove("active"));
-      dots[idx].classList.add("active");
-    }
-  });
+            if (distance < closestDistance) {
+                closestDistance = distance;
+                closestDot = dot;
+            }
+        });
+
+        if (closestDot) {
+            dots.forEach(d => d.classList.remove("active"));
+            closestDot.classList.add("active");
+        }
+    };
+
+    // Scroll to section on dot click
+    dots.forEach(dot => {
+        const targetId = dot.getAttribute("data-target");
+        const targetEl = document.getElementById(targetId);
+
+        dot.addEventListener("click", () => {
+            if (targetEl) {
+                targetEl.scrollIntoView({ behavior: "smooth" });
+                // highlight immediately
+                dots.forEach(d => d.classList.remove("active"));
+                dot.classList.add("active");
+            }
+        });
+    });
+
+    // Update on scroll and after scroll ends (scroll-snap)
+    window.addEventListener("scroll", updateActiveDot);
+    window.addEventListener("resize", updateActiveDot);
+
+    // Optional: observe scroll snapping end using IntersectionObserver
+    const observer = new IntersectionObserver(() => {
+        updateActiveDot();
+    }, { threshold: 0.5 });
+
+    document.querySelectorAll("section, .hero").forEach(sec => observer.observe(sec));
+
+    // initial update
+    updateActiveDot();
 });
 
 
 // ==========================
 // PAGE 2: EARTH LAYERS PLOT
 // ==========================
-const layers = [
-  { name: "Crust", color: "#d2c6a4", description: "Earth’s outer crust: thin and rigid", innerRadius: 130, outerRadius: 150 },
-  { name: "Lithosphere", color: "#8e8174", description: "Lithosphere: crust + upper mantle, rigid tectonic plates", innerRadius: 100, outerRadius: 130 },
-  { name: "Asthenosphere", color: "#5b4c3d", description: "Asthenosphere: partially molten, flows slowly", innerRadius: 70, outerRadius: 100 },
-  { name: "Mantle", color: "#3a3637", description: "Mantle: hot, convecting rock that makes up most of Earth’s volume", innerRadius: 20, outerRadius: 70 },
-];
+// // Hotspot behavior: show layer info on hover/focus/click
+// document.addEventListener("DOMContentLoaded", () => {
+//     const hotspots = document.querySelectorAll(".hotspot");
+//     const infoBox = document.getElementById("earth-layer-info");
+//     const defaultMsg = "Hover over the middle of each layer to learn more.";
 
-const width2D = 400;
-const height2D = 400;
+//     // safety: if no hotspots found, exit early
+//     if (!infoBox || hotspots.length === 0) {
+//         // console.warn("No hotspots or info box found.");
+//         return;
+//     }
+
+//     hotspots.forEach(h => {
+//         const name = h.dataset.name || "Layer";
+//         const desc = h.dataset.desc || "";
+
+//     // Hover & focus show details
+//     h.addEventListener("mouseover", () => {
+//         infoBox.innerHTML = `<strong>${name}</strong><br>${desc}`;
+//     });
+//     h.addEventListener("focus", () => {
+//         infoBox.innerHTML = `<strong>${name}</strong><br>${desc}`;
+//     });
+
+//     // mouseout & blur reset
+//     h.addEventListener("mouseout", () => {
+//         infoBox.textContent = defaultMsg;
+//     });
+//     h.addEventListener("blur", () => {
+//         infoBox.textContent = defaultMsg;
+//     });
+
+//     // click for touch: show and persist briefly so users can read
+//     let clickTimer;
+//     h.addEventListener("click", (e) => {
+//         e.preventDefault();
+//         clearTimeout(clickTimer);
+//         infoBox.innerHTML = `<strong>${name}</strong><br>${desc}`;
+//         // persist for 3s then revert
+//         clickTimer = setTimeout(() => {
+//         infoBox.textContent = defaultMsg;
+//         }, 3000);
+//     });
+//     });
+// });
+
+const layers = [
+    { name: "Crust", color: "#268020ff", description: "Earth’s outer crust: thin and rigid", innerRadius: 130, outerRadius: 150 },
+    { name: "Lithosphere", color: "#c99664ff", description: "Lithosphere: crust + upper mantle, rigid tectonic plates", innerRadius: 100, outerRadius: 130 },
+    { name: "Asthenosphere", color: "#52463bff", description: "Asthenosphere: partially molten, flows slowly", innerRadius: 70, outerRadius: 100 },
+    { name: "Mantle", color: "#333232ff", description: "Mantle: hot, convecting rock that makes up most of Earth’s volume", innerRadius: 40, outerRadius: 70 },
+    { name: "Core", color: "#f18f26ff", description: "At the very, very center is the inner core.It's a solid ball of iron and nickel, even though it's the hottest part (as hot as the surface of the sun!) The reason it stays solid is because all the other layers push down on it with a huge amount of pressure", innerRadius: 0, outerRadius: 40 },
+];
+// Manipulate the VIEW of page2
+const width2D = 450;
+const centerY = 400;
+const height2D = 330;
 
 const svg2D = d3.select("#earth-structure-plot")
     .append("svg")
     .attr("viewBox", `0 0 ${width2D} ${height2D}`)
-    .attr("width", "100%")
-    .attr("height", "100%")
+    .attr("preserveAspectRatio", "xMidYMid meet")
     .append("g")
-    .attr("transform", `translate(${width2D/2}, ${height2D/2})`);
+    .attr("transform", `translate(${width2D/2}, ${centerY/2})`);
 
 layers.forEach(layer => {
   const arcGen = d3.arc()
@@ -127,32 +204,34 @@ layers.forEach(layer => {
     .outerRadius(layer.outerRadius)
     .startAngle(-Math.PI/2)
     .endAngle(Math.PI/2);
-
   svg2D.append("path")
     .attr("d", arcGen())
     .attr("fill", layer.color)
     .attr("class", "layer-slice")
     .on("mouseover", event => {
-      d3.select("#earth-layer-info")
-        .html(`<strong>${layer.name}</strong><br>${layer.description}`);
-      svg2D.selectAll(".layer-slice").attr("opacity", 0.6);
-      d3.select(event.currentTarget).attr("opacity", 1);
+        d3.select("#earth-layer-info")
+            .html(`<strong>${layer.name}</strong><br>${layer.description}`);
+        svg2D.selectAll(".layer-slice").attr("opacity", 0.6);
+        d3.select(event.currentTarget).attr("opacity", 1);
     })
     .on("mouseout", () => {
-      d3.select("#earth-layer-info").html("Hover over a layer to see details.");
-      svg2D.selectAll(".layer-slice").attr("opacity", 1);
+        d3.select("#earth-layer-info").html("Let's show you a bit more about Earth's Layers! Hover over an individual layer for more details.");
+        svg2D.selectAll(".layer-slice").attr("opacity", 1);
     });
 
-  const centroid = arcGen.centroid();
-  svg2D.append("text")
-    .attr("x", centroid[0] * 1.1)
-    .attr("y", centroid[1] * 1.1)
-    .attr("text-anchor", centroid[0] > 0 ? "start" : "end")
-    .attr("alignment-baseline", "middle")
-    .attr("fill", "#fff")
-    .style("pointer-events", "none")
-    .text(layer.name);
+    // Center the labels of the earth 
+    const labelRadius = (layer.innerRadius + layer.outerRadius) / 1.93;
+    const labelOffset = 12;
+
+    svg2D.append("text")
+        .attr("x", 0)
+        .attr("y", -labelRadius + labelOffset)
+        .attr("text-anchor", "middle")
+        .attr("alignment-baseline", "middle")
+        .attr("class", "earth-layer-label")
+        .text(layer.name);
 });
+
 
 
 // ==========================
@@ -250,6 +329,8 @@ drag_behavior(svg1)
 plotCountriesRegions(svg1, countryData, 'country1')
 // Create Earthquake Spots (Func Caller)
 plotEarthquakesPoints(svg1, earthquakeData)
+// Create Gradient Color Legend
+createGradientLegend(earthquakeData)
 // Resize it when page first loaded (Func Caller)
 // Try remove it then it won't show up for page first load until you do something to the window to trigger it, i.e. inspect
 resizeGlobe1(svg1, path1, projection1, 'globe-sphere1', 'country1');
@@ -421,8 +502,6 @@ function plotEarthquakesPoints(selection, data) {
 
 // Function to plot seismic station points & Handle TOOLTIP HOVER INTERACTIONS (Func Definer)
 function plotStationsPoints(selection, data) {
-    console.log(data)
-
     // symbol generator for triangle
     const tri = d3.symbol().type(d3.symbolTriangle).size(90);
 
@@ -543,6 +622,114 @@ function isPointVisible(lon, lat, rotate) {
     // visible hemisphere
     return cosc > 0;
 }
+
+// Create a simple horizontal gradient legend for earthquake magnitude
+// function createGradientLegend(selection, data) {
+//     if (!data || data.length === 0) return;
+
+//     const minMag = d3.min(data, d => d.mag);
+//     const maxMag = d3.max(data, d => d.mag);
+
+//     const svgWidth = selection.node().getBoundingClientRect().width;
+//     const svgHeight = selection.node().getBoundingClientRect().height;
+
+//     const legendWidth = svgWidth * 0.25;  // 25% of SVG width
+//     const legendHeight = 14;
+//     const margin = 12;
+
+//     // Remove any existing legend
+//     selection.select("#legend-group").remove();
+
+//     // Create defs if not exist
+//     let defs = selection.select("defs");
+//     if (defs.empty()) defs = selection.append("defs");
+
+//     // Create linearGradient
+//     let grad = defs.select("#mag-gradient");
+//     if (grad.empty()) {
+//         grad = defs.append("linearGradient")
+//             .attr("id", "mag-gradient")
+//             .attr("x1", "0%")
+//             .attr("y1", "0%")
+//             .attr("x2", "100%")
+//             .attr("y2", "0%");
+//     }
+//     grad.selectAll("stop").remove();
+//     grad.append("stop").attr("offset", "0%").attr("stop-color", "pink");
+//     grad.append("stop").attr("offset", "100%").attr("stop-color", "red");
+
+//     // Create legend group
+//     const lg = selection.append("g")
+//         .attr("id", "legend-group")
+//         .attr("transform", `translate(${svgWidth - legendWidth - margin}, ${margin})`)
+//         .style("pointer-events", "none");
+
+//     // Background box
+//     lg.append("rect")
+//         .attr("x", -6)
+//         .attr("y", -6)
+//         .attr("width", legendWidth + 12)
+//         .attr("height", legendHeight + 36)
+//         .attr("rx", 6)
+//         .attr("fill", "#111")
+//         .attr("opacity", 0.6);
+
+//     // Gradient bar
+//     lg.append("rect")
+//         .attr("x", 0)
+//         .attr("y", 0)
+//         .attr("width", legendWidth)
+//         .attr("height", legendHeight)
+//         .attr("fill", "url(#mag-gradient)")
+//         .attr("stroke", "#fff")
+//         .attr("stroke-width", 0.4);
+
+//     // Labels
+//     lg.append("text")
+//         .attr("x", 0)
+//         .attr("y", legendHeight + 16)
+//         .attr("fill", "#fff")
+//         .attr("font-size", 11)
+//         .text(minMag.toFixed(1));
+
+//     lg.append("text")
+//         .attr("x", legendWidth / 2)
+//         .attr("y", legendHeight + 16)
+//         .attr("fill", "#fff")
+//         .attr("font-size", 11)
+//         .attr("text-anchor", "middle")
+//         .text(((minMag + maxMag) / 2).toFixed(1));
+
+//     lg.append("text")
+//         .attr("x", legendWidth)
+//         .attr("y", legendHeight + 16)
+//         .attr("fill", "#fff")
+//         .attr("font-size", 11)
+//         .attr("text-anchor", "end")
+//         .text(maxMag.toFixed(1));
+
+//     // Legend title
+//     lg.append("text")
+//         .attr("x", 0)
+//         .attr("y", -8)
+//         .attr("fill", "#fff")
+//         .attr("font-size", 12)
+//         .text("Magnitude");
+// }
+
+function createGradientLegend(data) {
+  if (!data || data.length === 0) return;
+
+  const minMag = d3.min(data, d => d.mag).toFixed(1);
+  const maxMag = d3.max(data, d => d.mag).toFixed(1);
+  const midMag = ((+minMag + +maxMag) / 2).toFixed(1);
+
+  document.getElementById("legend-min").textContent = minMag;
+  document.getElementById("legend-mid").textContent = midMag;
+  document.getElementById("legend-max").textContent = maxMag;
+}
+
+
 
 // Function to resize global to fit current container (Func Definer)
 function resizeGlobe1(selection, pathFunc, projectionFunc, idNameSphere, classNameCountry) {

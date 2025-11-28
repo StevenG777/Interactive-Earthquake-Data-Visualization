@@ -1,0 +1,68 @@
+# TODO
+SOURCE:
+https://www.e-education.psu.edu/earth109/node/870
+Should be ok to use this info so long we reference it
+
+HOW EARTHQUAKES WORK STUFFS
+
+COMPOSITIONAL LAYERS:
+Crust -- Earth’s outer crust is where we live. This layer includes both continental crust and oceanic crust. It is the solid, outermost shell of a rocky planet or moon.
+
+Mantle -- The mantle describes everything between the crust and the core. It is chemically distinct from both above and below it. The mantle is not liquid—it's made mostly of silicates and aluminum-rich minerals that behave like a slow-moving, deformable solid. Over long timescales, this material can “flow,” allowing for convection within the Earth.
+
+Core -- At Earth’s center is the core, made mostly of iron and nickel. The outer portion is liquid, but the inner core is solid, despite being as hot as the surface of the sun. It remains solid because the pressure from the overlying layers is extremely high.
+
+
+Mechanical Layers:
+Lithosphere:
+The lithosphere is the outermost mechanical layer and includes the crust plus the uppermost solid mantle. Its thickness varies depending on whether you’re beneath continents, oceans, or mountain ranges. The lithosphere is rigid and broken into tectonic plates. The thickness of a layer will vary i.e. are you at a mountain top or are you at the ocean floor?
+
+Asthenosphere:
+Located directly beneath the lithosphere, the asthenosphere is not liquid, but it is a weak, easily flowing part of the upper mantle. This slow flow allows the rigid tectonic plates above it to move.
+
+Mesosphere:
+Beneath the asthenosphere lies the mesosphere, or lower mantle. This layer still behaves like a solid that can flow, but it does so much more slowly than the asthenosphere due to increased pressure.
+
+Outer Core:
+Below the mesosphere is the outer core, composed mostly of liquid iron and nickel. This is the only fully liquid layer in Earth’s interior. The movement of this metallic liquid generates Earth’s magnetic field.
+
+
+So how do earthquakes happen?
+
+Earthquakes occur along faults, which are fractures in Earth’s lithosphere. Sometimes, tectonic plates get stuck on one another via a fault. Stress continues to build as the plates keep trying to move, but that fault is preventing movement. When the stress exceeds the strength of the fault, it suddenly releases energy in the form of seismic waves, which we experience as an earthquake.
+
+
+
+
+LIVE ACTION RECENT EVENTS (maybe put this as our page 2? or after the layers explanation since I then explained the earthquakes)
+
+6.3 Mw in Afghanistan on Nov-2-2025
+
+5.7Mw (moment Magnitude) in Bangladesh Nov-23-2025
+
+6.9Mw in Phillipines on Sept-30-2025
+The Phillipines is a odd case as they have experienced 2 typhoons and an earthquake over the span of 8 days.
+
+We'll explain some of the mechanics of Earthquakes. Assuming a good amount of our audience is from California, we do reside along the San Andres Fault. Further north is the Cascadia Subduction Zone.
+
+Links to keep yourself updated and informed
+
+ARTEMIS: https://www.artemis.bm/recent-earthquakes/
+
+Quakes Today: https://x.com/QuakesToday
+
+Quakes over the last 24 hours: https://earthquaketrack.com/
+
+
+
+TAKEAWAYS:
+
+We've shown you the mechanics of Earthquakes
+  what our Earth's layers consist of 
+  what events cause earthquakes
+  heavily impacted zones
+
+Examples of the impact these natural disasters cause over time.
+
+
+Where your living situation is in relation to the earthquakes we experience.
