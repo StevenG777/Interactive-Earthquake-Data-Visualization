@@ -36,7 +36,7 @@ async function loadJSON(path) {
     return data
 }
 
-// Call the CSV loader function (Func Caller & Callback)
+// Call the CSV loader function for Earthquake Spots (Func Caller & Callback)
 const earthquakeData = (await loadCSV("earthquakes.csv", 1000))
     .filter(d => 
         d.mag != null && !isNaN(d.mag) &&
@@ -44,8 +44,13 @@ const earthquakeData = (await loadCSV("earthquakes.csv", 1000))
         d.longitude != null && !isNaN(d.longitude) &&
         d.place != null
     );
+
+
 console.log("Earthquake Data")
 console.log(earthquakeData)
+
+// Call the CSV loader function for Seismic Stations (Func Caller)
+const stationData = await loadCSV('stations.csv')
 
 // Call the JSON loader function (Function Caller)
 const countryData = await loadJSON("https://unpkg.com/world-atlas@2/countries-110m.json")
@@ -155,9 +160,9 @@ const tooltip = d3.select("#globe-tooltip");
 // ==========================
 // PAGE 3: GLOBE 1 Right
 // ==========================
-const svg1r = d3.select("#globe-svg-r");  // Make sure you have a container with this ID
-const path1r = d3.geoPath();
-const projection1r = d3.geoOrthographic().clipAngle(90);
+const svg1R = d3.select("#globe-svg-r");  // Make sure you have a container with this ID
+const path1R = d3.geoPath();
+const projection1R = d3.geoOrthographic().clipAngle(90);
 
 // GLOBAL VARIABLE INITIALIZATION -------------------------------------------->
 // Create D3 selection, & locate the SVG container, 
@@ -188,80 +193,92 @@ let lastX1, lastY1;
 // FUNCTION CALLING -----------------------------------------------------------
 
 // Handle DRAG ROTATION INTERACTIONS (Func Caller & Callback)
-svg1.call(
-    // selection.call(d3.drag()) <--> d3.drag().apply(selection)
-    // D3 Built-in Interactions:
-        // Brush, Dispatch, Drag, Zoom
-        // We use drag interaction here
-    d3.drag()
-        // Event when user start press on the globe
-        .on("start", event => { 
-            // Record current X,Y coordinates
-            lastX1 = event.x; 
-            lastY1 = event.y; 
-        })
-        // Event when user continue to drag the globe
-        .on("drag", event => {
-            // Find diff X,Y coordinates from BEFORE drag and AFTER drag coordinates
-            const dx = event.x - lastX1;
-            const dy = event.y - lastY1;
-            // dx = event.x - lastX1; dy = event.y - lastY1;
-            // Change rotation amount
-                // Choose 0.7 because you don't want the rotation to be too sensitive, ruin UX
-                // Choose rotate1[0] += because when you move left, it rotates toward left, vice versa
-                // Choose rotate1[1] -= because invert the direction align with MacOS standard, when you move up, you scroll down, vice versa
-                // Choose Math.max(-90, Math.min(90, rotate1[1])), because you will flip the earth vertically and disoriented
-                    // If you don't believe what I said, try it
-            rotate1[0] += dx * 0.8;
-            rotate1[1] -= dy * 0.8;
-            rotate1[1] = Math.max(-90, Math.min(90, rotate1[1]));
-            // Rotate <path>, NOT <circle>, in horizontal/vertical direction specifed by rotate1
-            // projection(orthographicRaw()).rotate([λ, φ])
-            projection1.rotate(rotate1);
-            projection1r.rotate(rotate1);
-            
-            // Re-render the SVG <path>
-            // It DOES NOT re-render <circle>
-            svg1.select("path.globe-sphere")
-                .attr("d", path1);
-            svg1r.select("path.globe-sphere")
-                .attr("d", path1r);
 
-            // Re-render the SVG <circle> with the correct X,Y coordinates
-            // It DOES NOT re-render other SVG elements: <path>, <line>, <text>, whatever
-            updateEarthquakes();
 
-            // Update the current X,Y coordinates
-            lastX1 = event.x;
-            lastY1 = event.y;
-        })
-);
+// selection.call(d3.drag()) <--> d3.drag().apply(selection)
+// D3 Built-in Interactions:
+    // Brush, Dispatch, Drag, Zoom
+    // We use drag interaction here
+const drag_behavior = d3.drag()
+    // Event when user start press on the globe
+    .on("start", event => { 
+        // Record current X,Y coordinates
+        lastX1 = event.x; 
+        lastY1 = event.y; 
+    })
+    // Event when user continue to drag the globe
+    .on("drag", event => {
+        // Find diff X,Y coordinates from BEFORE drag and AFTER drag coordinates
+        const dx = event.x - lastX1;
+        const dy = event.y - lastY1;
+        // dx = event.x - lastX1; dy = event.y - lastY1;
+        // Change rotation amount
+            // Choose 0.7 because you don't want the rotation to be too sensitive, ruin UX
+            // Choose rotate1[0] += because when you move left, it rotates toward left, vice versa
+            // Choose rotate1[1] -= because invert the direction align with MacOS standard, when you move up, you scroll down, vice versa
+            // Choose Math.max(-90, Math.min(90, rotate1[1])), because you will flip the earth vertically and disoriented
+                // If you don't believe what I said, try it
+        rotate1[0] += dx * 0.8;
+        rotate1[1] -= dy * 0.8;
+        rotate1[1] = Math.max(-90, Math.min(90, rotate1[1]));
+        // Rotate <path>, NOT <circle>, in horizontal/vertical direction specifed by rotate1
+        // projection(orthographicRaw()).rotate([λ, φ])
+        projection1.rotate(rotate1);
+        projection1R.rotate(rotate1);
+        
+        // Re-render the SVG <path>
+        // It DOES NOT re-render <circle>
+        svg1.select("path#globe-sphere1").attr("d", path1);
+        svg1.selectAll(".country1").attr("d", path1);
+        svg1R.select("path#globe-sphere1R").attr("d", path1R);
+        svg1R.selectAll(".country1R").attr("d", path1R);
+
+        // Re-render the SVG <circle> with the correct X,Y coordinates
+        // It DOES NOT re-render other SVG elements: <path>, <line>, <text>, whatever
+        updateEarthquakes();
+
+        // Update the current X,Y coordinates
+        lastX1 = event.x;
+        lastY1 = event.y;
+    })
+
+drag_behavior(svg1)
+drag_behavior(svg1R)
 
 // Create Base Sphere (Func Caller)
-plotBaseSphere(svg1, sphereData)
+plotBaseSphere(svg1, sphereData, 'globe-sphere1')
 
 // Create Country Sphere (Func Caller)
-plotCountriesRegions(svg1, countryData)
+plotCountriesRegions(svg1, countryData, 'country1')
 
 // Create Earthquake Spots (Func Caller)
 plotEarthquakesPoints(svg1, earthquakeData)
 
 // Resize it when page first loaded (Func Caller)
 // Try remove it then it won't show up for page first load until you do something to the window to trigger it, i.e. inspect
-resizeGlobe1(svg1, path1, projection1);
+resizeGlobe1(svg1, path1, projection1, 'globe-sphere1', 'country1');
 
 // Resize for Web Responsive Design (CSS Flex Display Simply Won't Help) (Event Listener Caller & Callback)
-window.addEventListener("resize", () => resizeGlobe1(svg1, path1, projection1));
+window.addEventListener("resize", () => resizeGlobe1(svg1, path1, projection1, 'globe-sphere1', 'country1'));
 // --------------------------------------------------------------------------
+
+
+plotBaseSphere(svg1R, sphereData, 'globe-sphere1R')
+
+plotCountriesRegions(svg1R, countryData, 'country1R')
+
+resizeGlobe1(svg1R, path1R, projection1R, 'globe-sphere1R', 'country1R');
+
+window.addEventListener("resize", () => resizeGlobe1(svg1R, path1R, projection1R, 'globe-sphere1R', 'country1R'));
 
 // FUNCTION DEFINITION ----------------------------------------------------->
 // Function to plot blank sphere globe (Func Definer)
-function plotBaseSphere(selection, data) {
+function plotBaseSphere(selection, data, idName) {
     selection.append("path")
         // Input Sphere data
         .datum(data)
         // SVG Name Attribute
-        .attr("class", "globe-sphere")
+        .attr("id", idName)
         // SVG Styling
         .attr("fill", "#000")
         .attr("stroke", "#fff")
@@ -269,7 +286,7 @@ function plotBaseSphere(selection, data) {
 }
 
 // Function to plot countries sphere & Handle CLICK COUNTRY NAME INTERACTIONS (Func Definer)
-function plotCountriesRegions(selection, data) {
+function plotCountriesRegions(selection, data, className) {
     // Extract relevant country data from the object
     const countryGeoNameData = topojson.feature(data, data.objects.countries).features;
     console.log(countryGeoNameData)
@@ -280,14 +297,16 @@ function plotCountriesRegions(selection, data) {
         .attr("class", "countries");
 
     // Create D3 selection & locate the country group container
-    countriesGroup1.selectAll(".country")
+    // countriesGroup1.selectAll(".country")
+    countriesGroup1.selectAll(`.${className}`)
         // Input Country Geometry & Name data
         .data(countryGeoNameData)
         .enter()
         // Create individual country <path>
         .append("path")
         // SVG Styling
-        .attr("class", "country")
+        // .attr("class", "country")
+        .attr("class", className)
         .attr("fill", "#222222")
         .attr("stroke", "#fff")
         .attr("stroke-width", 0.5)
@@ -319,6 +338,15 @@ function plotCountriesRegions(selection, data) {
 
 // Function to plot earthquake spot to globe & Handle TOOLTIP HOVER INTERACTIONS (Func Definer)
 function plotEarthquakesPoints(selection, data) {
+    // Compute min and max magnitude from earthquakeData
+    const minMag = d3.min(data, d => d.mag);
+    const maxMag = d3.max(data, d => d.mag);
+    // Define color --> gradient from orange → red
+    const GradColor = d3.scaleLinear()
+        .domain([minMag, maxMag])
+        .range(["pink", "red"])           
+        .interpolate(d3.interpolateLab);
+
     // Create SVG group <g> for groups of earthquake spots <circle>
     const earthquakesGroup = selection.append("g")
         // SVG Name Attribute
@@ -337,7 +365,7 @@ function plotEarthquakesPoints(selection, data) {
         // SVG Styling
         .attr("cy", d => projection1([d.longitude, d.latitude])[1])
         .attr("r", d => Math.sqrt(Math.abs(d.mag)) * 2)
-        .attr("fill", "#ff0202ff")
+        .attr("fill", d => GradColor(d.mag))
         .attr("stroke", "#fff")
         .attr("stroke-width", 0.3)
         .attr("opacity", d => isPointVisible(d.longitude, d.latitude, rotate1) ? 0.8 : 0)
@@ -383,7 +411,7 @@ function plotEarthquakesPoints(selection, data) {
 
         })
         // Event when no longer hover on the earthquake point
-        .on("mouseout", function(event, d) {
+        .on("mouseout", function(_, d) {
             // Reset Tooltip
             tooltip.style("display","none");
             
@@ -393,13 +421,13 @@ function plotEarthquakesPoints(selection, data) {
                 // SVG Styling
                 .transition()
                 .duration(150)
-                .attr("fill", "#ff0202ff")
+                .attr("fill", d => GradColor(d.mag))
                 .attr("r", Math.sqrt(d.mag) * 2);
         });
 }
 
 // Function to resize global to fit current container (Func Definer)
-function resizeGlobe1(selection, pathFunc, projectionFunc) {
+function resizeGlobe1(selection, pathFunc, projectionFunc, idNameSphere, classNameCountry) {
     const containerWidth = selection.node().parentNode.getBoundingClientRect().width;
 
     selection
@@ -412,9 +440,9 @@ function resizeGlobe1(selection, pathFunc, projectionFunc) {
 
     pathFunc.projection(projectionFunc);
 
-    selection.select(".globe-sphere")
+    selection.select(`#${idNameSphere}`)
         .attr("d", pathFunc);
-    selection.selectAll(".country")
+    selection.selectAll(`.${classNameCountry}`)
         .attr("d", pathFunc);
 
     updateEarthquakes();
@@ -423,7 +451,6 @@ function resizeGlobe1(selection, pathFunc, projectionFunc) {
 // Function to update earthquakes on rotation or resize (Func Definer)
 function updateEarthquakes() {
     // Ensure <circle> are both shown/hidden and update to rotated positions
-
     // Create D3 selection & locate the <circle>
     svg1.selectAll(".earthquakes circle")
         // Update X,Y positions with projection
@@ -452,45 +479,6 @@ function isPointVisible(lon, lat, rotate) {
     return cosc > 0;
 }
 // --------------------------------------------------------------------------
-
-// Initialize rotation and drag coordinates
-// let rotate1r = [0, -20];
-// let lastX1r, lastY1r;
-
-// Create empty countries group (optional, can be populated later)
-// const countriesGroup1r = svg1r.append("g").attr("class", "countries");
-
-// DRAG ROTATION INTERACTIONS
-// svg1r.call(
-//     d3.drag()
-//         // .on("start", event => {
-//         //     lastX1 = event.x;
-//         //     lastY1 = event.y;
-//         // })
-//         .on("drag", event => {
-//             // dx = event.x - lastX1;
-//             // dy = event.y - lastY1;
-
-//             rotate1[0] += dx * 0.7;
-//             rotate1[1] -= dy * 0.7;
-//             rotate1[1] = Math.max(-90, Math.min(90, rotate1[1]));
-
-//             projection1.rotate(rotate1);
-
-//             svg1r.selectAll("path").attr("d", path1);
-
-//             // lastX1 = event.x;
-//             // lastY1 = event.y;
-//         })
-// );
-
-plotBaseSphere(svg1r, sphereData)
-plotCountriesRegions(svg1r, countryData)
-resizeGlobe1(svg1r, path1, projection1);
-window.addEventListener("resize", () => resizeGlobe1(svg1r, path1, projection1));
-
-
-
 
 
 // // ==========================
