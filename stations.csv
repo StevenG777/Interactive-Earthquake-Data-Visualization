@@ -1,4 +1,4 @@
-Network Code,Station Code,Name,Telemetry,Latitude,Longitude,Elevation
+network code,station code,name,telemetry,latitude,longitude,elevation
 CU,ANWB,North Barbuda Island,Telemetry Status 2,17.6684,-61.78562,9
 CU,BBGH,"Gun Hill, Barbados",Telemetry Status 0,13.1434,-59.5588,180
 CU,BCIP,"Isla Barro Colorado, Panama",Telemetry Status 2,9.1665,-79.8373,61
