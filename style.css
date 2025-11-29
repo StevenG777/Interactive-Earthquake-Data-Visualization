@@ -76,21 +76,11 @@ section, .hero {
     max-width: 850px;
     line-height: 1.5;
 }
-<<<<<<< Updated upstream
 /* Earth Layers */
 #earth-structure-section h1 {
     color: #ffffff;
     margin-top: -100px;
     text-align: center;
-=======
-
-/* ========================== */
-/* Earth Layers Section */
-/* ========================== */
-
-#earth-structure h1 { 
-    color: #f7f7f7;
->>>>>>> Stashed changes
 }
 
 /* keep the section full-page */
@@ -110,10 +100,8 @@ section, .hero {
 .image-hotspot-wrap {
   position: relative;
   width: 90%;
-  max-width: 760px;
+  max-width: 760px;   /* change to taste */
   margin: 0 auto;
-  /* create stacking context for consistent z-index behavior */
-  isolation: isolate;
 }
 
 #earth-structure-img {
@@ -123,47 +111,30 @@ section, .hero {
   max-height: 60vh;
   object-fit: contain;
   border-radius: 8px;
-  position: relative;
-  z-index: 10;            /* behind the hotspots */
-  -webkit-user-select: none;
-  user-select: none;
-  /* allow pointer events on image (optional). If the hotspots are extremely small,
-     you can set pointer-events: none on the image to ensure clicks always reach hotspots */
-  /* pointer-events: none; */
 }
 
 /* invisible hotspots */
 .hotspot.invisible {
   position: absolute;
   transform: translate(-50%, -50%);
-<<<<<<< Updated upstream
   width: 2vw;            /* desktop hit area width (adjust if needed) */
   height: 20%;           /* taller height so it covers thin layers vertically */
-=======
-  width: 16%;            /* smaller default hit area */
-  height: 10%;
->>>>>>> Stashed changes
   background: transparent;
   border: none;
   padding: 0;
   margin: 0;
   cursor: pointer;
-  z-index: 20;           /* in front of the image */
+  z-index: 40;
   outline: none;
 }
 
 /* accessible focus ring for keyboard users */
 .hotspot.invisible:focus-visible {
-<<<<<<< Updated upstream
   box-shadow: 1 0 0 1px rgba(90,144,255,0.22);
   border-radius: 4px;
   outline: none;
   width: 2vw;
   height: 10vw;
-=======
-  box-shadow: 0 0 0 3px rgba(90,144,255,0.28);
-  border-radius: 6px;
->>>>>>> Stashed changes
 }
 
 /* info box */
