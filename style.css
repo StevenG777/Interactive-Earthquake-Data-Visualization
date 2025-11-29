@@ -182,11 +182,12 @@ section, .hero {
 
 /* legend container (keeps same place) */
 .legend-container {
-  position: absolute;
+  position: relative;
   top: 1.25rem;
   left: 1.25rem;
   display: flex;
-  align-items: center;
+  flex-direction: row;
+  align-items: flex-start;
   gap: 10px;
   color: #fff;
   z-index: 30;
@@ -197,6 +198,7 @@ section, .hero {
   transform: rotate(180deg);
   font-size: 12px;
   opacity: 0.95;
+  margin-top: 45px;
 }
 
 .legend-bar {
@@ -206,6 +208,19 @@ section, .hero {
   background: linear-gradient(to top, pink, red);
   border: 1px solid rgba(255,255,255,0.14);
 }
+
+/* Stack labels vertically next to the gradient bar */
+.legend-labels {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 150px; /* same height as bar */
+}
+
+.legend-labels span {
+  font-size: 10px;
+}
+
 
 /* ========== Globe containers ========== */
 /* globe takes ~40% width and stretches vertically */
@@ -224,7 +239,7 @@ section, .hero {
 .story-text {
   flex: 1 1 60%;
   min-width: 260px;
-  max-width: 720px;
+  max-width: 600px;
   margin: 0;
   padding: 1rem;
   color: #f7f7f7;
