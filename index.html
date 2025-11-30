@@ -74,7 +74,7 @@
 
 <div class="globe-column">
   <div class="globe-container globe-top">
-    <p class="globe-instruction">Hover over the globes to see details.</p>
+    <p class="globe-instruction">Hover over the globes to see details. Drag to rotate.</p>
     <div class="globe-title1">Seismic Network</div> <!-- Title for top globe -->
 
     <svg id="globe-svg-r"></svg>
@@ -115,7 +115,7 @@
           <p>
             Divergence, convergence, and transforming of 
             lithospheric tectonic plates accumulates stress at plate boundaries. 
-            These either cumulate to seismic events or are periodically released abruptly as earthquakes 
+            These either cumulate to seismic events or are periodically released abruptly as earthquakes.
           </p>
         </div>
 
@@ -166,7 +166,7 @@
   </div>
 </section>
 
-  <div id="globe-tooltip">Drag to rotate</div>
+  
 
 <!-- Page 4 (Globe 2 + Country + City Search) -->
 <section id="country-detail-section">
@@ -175,24 +175,20 @@
   </div>
 
   <div class="country-info">
-    <h2 id="country-name">Search for a city</h2>
+    <h2 id="country-name">Search for a country</h2>
 
-    <!-- City search -->
-    <div class="city-search">
-      <input type="text" id="city-input" placeholder="Enter a city name...">
-      <button id="city-search-btn">Search</button>
+    <div class="country-search">
+      <input type="text" id="country-input" placeholder="Enter a country name...">
+      <button id="country-search-btn">Search</button>
     </div>
 
-    <div id="city-info">
-      <p id="city-result">City info will appear here.</p>
+    <div id="country-info">
+      <p id="country-result">Country info will appear here.</p>
     </div>
 
-    <!-- Zoomed-in country map -->
     <svg id="country-map" width="100%" height="300px"></svg>
   </div>
 </section>
-
-
 
   <!-- Page 5: California Earthquake Heatmap -->
 <section id="heatmap-section" class="full-page">
@@ -225,6 +221,20 @@
       </div>
     </div>
   </div>
+
+  <div id="globe-tooltip" 
+     style="
+        position: absolute;
+        pointer-events: none; 
+        background: rgba(0,0,0,0.8); 
+        color: #fff; 
+        padding: 6px 10px; 
+        border-radius: 4px; 
+        font-size: 0.85rem;
+        display: none;
+        z-index: 1000;
+     ">
+</div>
 </section>
 
 <section id="news-section" class="full-page">
@@ -291,9 +301,6 @@
 
   </div>
 </section>
-
-
-
 
   <!-- JS -->
   <script src="script.js" type="module"></script>

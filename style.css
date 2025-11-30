@@ -265,7 +265,7 @@ section, .hero {
   width: 16px;
   height: 150px;
   border-radius: 4px;
-  background: linear-gradient(to top, pink, red);
+  background: linear-gradient(to top, #EB776C, #E31F07);
   border: 1px solid rgba(255,255,255,0.14);
 }
 
@@ -315,7 +315,7 @@ section, .hero {
 }
 
 .feature-box {
-  background: #111;
+  background: #26262e;
   color: #ffffff;
   border-radius: 10px;
   padding: 15px;
@@ -345,8 +345,6 @@ section, .hero {
   transform: translateY(-6px);
   box-shadow: 0 12px 30px rgba(0,0,0,0.18);
 }
-
-
 
 /* ========================== */
 /* PAGE 4: Globe + Country Info + City Search */
@@ -398,26 +396,14 @@ section, .hero {
   height: 100%;
 }
 
-#globe-tooltip {
-  position: absolute;
-  pointer-events: none;
-  padding: 6px 10px;
-  background: rgba(0,0,0,0.75);
-  color: #fff;
-  border-radius: 6px;
-  font-size: 12px;
-  display: none;
-  z-index: 2000;
-}
-
 /* City search bar */
-.city-search {
+.country-search {
   display: flex;
   gap: 0.5rem;
   margin: 0.5rem 0;
 }
 
-#city-input {
+#country-input {
   flex: 1;
   padding: 0.5rem 0.75rem;
   border-radius: 6px;
@@ -426,29 +412,28 @@ section, .hero {
   color: #fff;
 }
 
-#city-input::placeholder {
+#country-input::placeholder {
   color: #aaa;
 }
 
-#city-search-btn {
+#country-search-btn {
   padding: 0.5rem 1rem;
   border: none;
   border-radius: 6px;
-  background-color: #2156e9;
+  background-color: #4d6dc5;
   color: #fff;
   cursor: pointer;
   transition: background-color 0.2s;
 }
 
-#city-search-btn:hover {
-  background-color: #1440a5;
+#country-search-btn:hover {
+  background-color: #626a7c;
 }
 
-#city-info p {
+#country-info p {
   margin: 0.5rem 0;
   color: #c9c9c9;
 }
-
 
 /* ========================== */
 /* PAGE 5

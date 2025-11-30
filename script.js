@@ -413,19 +413,15 @@ function plotBaseSphere(selection, data, idName) {
         .attr("stroke-width", 0.5);
 }
 
-// Function to plot countries sphere & Handle CLICK COUNTRY NAME INTERACTIONS (Func Definer)
 function plotCountriesRegions(selection, data, className) {
     const countryGeoNameData = topojson.feature(data, data.objects.countries).features;
     const countriesGroup1 = selection.append("g")
         .attr("class", "countries");
 
     countriesGroup1.selectAll(`.${className}`)
-        // Input Country Geometry & Name data
         .data(countryGeoNameData)
         .enter()
-        // Create individual country <path>
         .append("path")
-        // SVG Styling
         .attr("class", className)
         .attr("fill", "#222222")
         .attr("stroke", "#fff")
@@ -446,8 +442,6 @@ function plotCountriesRegions(selection, data, className) {
         .on("mouseout", function() {
             
             d3.select(this)
-                // SVG Styling
-                // Reset the selected country region
                 .attr("fill", "#222222");
             // Hide tooltip info
             tooltip.style("display","none");
@@ -456,13 +450,11 @@ function plotCountriesRegions(selection, data, className) {
 
 // Function to plot earthquake spot to globe & Handle TOOLTIP HOVER INTERACTIONS (Func Definer)
 function plotEarthquakesPoints(selection, data) {
-    // Compute min and max magnitude from earthquakeData
     const minMag = d3.min(data, d => d.mag);
     const maxMag = d3.max(data, d => d.mag);
-    // Define color --> gradient from orange → red
     const GradColor = d3.scaleLinear()
         .domain([minMag, maxMag])
-        .range(["pink", "red"])           
+        .range(["#EB776C", "#E31F07"])           
         .interpolate(d3.interpolateLab);
 
     // Create SVG group <g> for groups of earthquake spots <circle>
@@ -481,47 +473,49 @@ function plotEarthquakesPoints(selection, data) {
         .attr("fill", d => GradColor(d.mag))
         .attr("stroke", "#fff")
         .attr("stroke-width", 0.3)
-        .attr("opacity", d => isPointVisible(d.longitude, d.latitude, rotate1) ? 0.8 : 0)
+        .attr("opacity", d => isPointVisible(d.longitude, d.latitude, projection1.rotate()) ? 0.8 : 0)
 
         .on("mouseover", function(event, d) {
-            d3.select(this)
-                .transition()
-                .duration(150)
-                .attr("fill", "#4d1515ff")
-                .attr("r", Math.sqrt(d.mag) * 4);  
+    const originalColor = GradColor(d.mag);
+    const darkColor = d3.color(originalColor).darker(1.2); // adjust factor as needed
 
-            if (isPointVisible(d.longitude, d.latitude, rotate1)) {
-                let location = d.place;
-                let distance = "";
+    d3.select(this)
+        .transition()
+        .duration(150)
+        .attr("fill", darkColor)          // darkened version
+        .attr("r", Math.sqrt(d.mag) * 4);
 
-                if (d.place.includes(",")) {
-                    const parts = d.place.split(",");
-                    distance = parts[0].trim();
-                    location = parts[1].trim();
-                }
-                tooltip.html(`
-                    <strong>${location}</strong><br>
-                    ${distance ? `* Distance: ${distance}<br>` : ""}
-                    * Mag: ${d.mag != null ? d.mag : "Unknown"}
-                `)
-                .style("display", "block")
-                .style("left", (event.pageX + 10) + "px")
-                .style("top",  (event.pageY + 10)  + "px");
-            }
-            else {
-                tooltip.style("display","none");
-            }
+    if (isPointVisible(d.longitude, d.latitude, projection1.rotate())) {
+        let location = d.place;
+        let distance = "";
 
-        })
-        .on("mouseout", function(_, d) {
-            tooltip.style("display","none");
-            
-            d3.select(this)
-                .transition()
-                .duration(150)
-                .attr("fill", d => GradColor(d.mag))
-                .attr("r", Math.sqrt(d.mag) * 2);
-        });
+        if (d.place.includes(",")) {
+            const parts = d.place.split(",");
+            distance = parts[0].trim();
+            location = parts[1].trim();
+        }
+        tooltip.html(`
+            <strong>${location}</strong><br>
+            ${distance ? `Distance: ${distance}<br>` : ""}
+            Mag: ${d.mag != null ? d.mag : "Unknown"}
+        `)
+        .style("display", "block")
+        .style("left", (event.pageX + 10) + "px")
+        .style("top",  (event.pageY + 10)  + "px");
+    } else {
+        tooltip.style("display","none");
+    }
+})
+.on("mouseout", function(_, d) {
+    // Reset to original gradient color
+    d3.select(this)
+        .transition()
+        .duration(150)
+        .attr("fill", GradColor(d.mag))
+        .attr("r", Math.sqrt(d.mag) * 2);
+
+    tooltip.style("display","none");
+});
 }
 
 function plotStationsPoints(selection, data) {
@@ -549,11 +543,12 @@ function plotStationsPoints(selection, data) {
             d3.select(this)
                 .transition()
                 .duration(140)
+                .attr("fill", "#0033a0") // dark blue on hover
                 .attr("transform", () => {
                     const p = projection1R([d.longitude, d.latitude]);
                     return `translate(${p[0]},${p[1]}) scale(1.2)`;
                 });
-
+                
             if (isPointVisible(d.longitude, d.latitude, rotate1)) {
                tooltip.html(`
                         <strong>${d["station code"]}</strong><br>
@@ -574,6 +569,7 @@ function plotStationsPoints(selection, data) {
             d3.select(this)
                 .transition()
                 .duration(120)
+                .attr("fill", "#2aa3ff")
                 .attr("transform", () => {
                     const p = projection1R([d.longitude, d.latitude]);
                     return `translate(${p[0]},${p[1]}) scale(1)`;
@@ -652,13 +648,13 @@ function resizeGlobe1(selection, pathFunc, projectionFunc, idNameSphere, classNa
 // ----------------------------------------------------------------------------
 
 // ==========================
-// PAGE 4: GLOBE 2 + CITY SEARCH
+// PAGE 4: GLOBE 2 + Country SEARCH (updated)
 // ==========================
 const svg2 = d3.select("#globe-svg-2");
 const path2 = d3.geoPath();
 const projection2 = d3.geoOrthographic().clipAngle(90);
 
-// Globe sphere
+// Globe sphere (ensure it's drawn first)
 svg2.append("path")
   .datum({ type: "Sphere" })
   .attr("class", "globe-sphere2")
@@ -666,25 +662,22 @@ svg2.append("path")
   .attr("stroke", "#fff")
   .attr("stroke-width", 0.5);
 
-// Keep drag behavior
-drag_behavior(svg2); // your existing drag function
+// Keep drag behavior (your existing drag function)
+if (typeof drag_behavior === "function") drag_behavior(svg2);
 
 // Countries group
 const countriesGroup2 = svg2.append("g").attr("class", "countries");
 const countryMapSvg = d3.select("#country-map");
 
-// City marker group
-const cityMarkerGroup = svg2.append("g").attr("class", "city-marker-group");
-
-let cities = [];
-
-// Load world cities CSV
-d3.csv("worldcities.csv").then(data => {
-  cities = data; // dataset has columns: city, city_ascii, lat, lng, country, iso2, iso3, admin_name, capital, population, id
-});
-
-// Load countries
+// State
 let countriesData = [];
+let selectedCountry = null; // will hold the selected feature
+
+// Default fill for countries
+const DEFAULT_FILL = "#222222";
+const HIGHLIGHT_FILL = "#4c8e57ff"; 
+
+// Load countries topojson (world-atlas)
 d3.json("https://unpkg.com/world-atlas@2/countries-110m.json").then(worldData => {
   countriesData = topojson.feature(worldData, worldData.objects.countries).features;
 
@@ -693,106 +686,222 @@ d3.json("https://unpkg.com/world-atlas@2/countries-110m.json").then(worldData =>
     .enter()
     .append("path")
     .attr("class", "country2")
-    .attr("fill", "#222222")
+    .attr("fill", DEFAULT_FILL)
     .attr("stroke", "#fff")
-    .attr("stroke-width", 0.5);
+    .attr("stroke-width", 0.5)
+    .attr("d", path2);
 
   resizeGlobe2();
+}).catch(err => {
+  console.error("Failed to load world data:", err);
+  d3.select("#country-result").text("Error loading world geometry.");
 });
 
-// Resize globe function
 function resizeGlobe2() {
-  const cw = svg2.node().parentNode.getBoundingClientRect().width;
+  const cw = svg2.node().parentNode.getBoundingClientRect().width || 300;
   svg2.attr("width", cw).attr("height", cw);
   projection2.translate([cw / 2, cw / 2]).scale(cw / 2 * 0.9);
   path2.projection(projection2);
+  
   svg2.select(".globe-sphere2").attr("d", path2);
+  
   svg2.selectAll(".country2").attr("d", path2);
+  
+  svg2.selectAll(".country2")
+    .attr("fill", d => (selectedCountry && sameFeature(d, selectedCountry)) ? HIGHLIGHT_FILL : DEFAULT_FILL);
 }
 window.addEventListener("resize", resizeGlobe2);
 
-// ==========================
-// CITY SEARCH FUNCTIONALITY
-// ==========================
-const cityInput = document.getElementById("city-input");
-const cityBtn = document.getElementById("city-search-btn");
-const cityResult = document.getElementById("city-result");
+function sameFeature(a, b) {
+  if (!a || !b) return false;
+  if (a.id !== undefined && b.id !== undefined) return a.id === b.id;
+  // fallback: compare references
+  return a === b;
+}
 
-cityBtn.addEventListener("click", () => {
-  const input = cityInput.value.trim().toLowerCase();
-  if (!input) return;
+// Smoothly rotate globe to target [lon, lat]
+function rotateToLonLat(lon, lat, duration = 1000) {
+  // current rotate is [lambda, phi, gamma]
+  const currentRotate = projection2.rotate();
+  const targetRotate = [-lon, -lat, 0];
 
-  // Find city (match city or city_ascii)
-  const city = cities.find(c =>
-    c.city.toLowerCase() === input ||
-    c.city_ascii.toLowerCase() === input
-  );
+  // Use d3.interpolate for arrays
+  d3.transition()
+    .duration(duration)
+    .tween("rotate", function() {
+      const rInterpolator = d3.interpolate(currentRotate, targetRotate);
+      return function(t) {
+        projection2.rotate(rInterpolator(t));
+        // update paths as rotation changes
+        svg2.selectAll(".country2").attr("d", path2);
+        svg2.select(".globe-sphere2").attr("d", path2);
+      };
+    });
+}
 
-  if (!city) {
-    cityResult.textContent = "City not found. Try another city.";
+
+function drawCountryMap(feature) {
+  countryMapSvg.selectAll("*").remove();
+
+  if (!feature) return;
+
+  const cw = countryMapSvg.node().getBoundingClientRect().width || 400;
+  const ch = countryMapSvg.node().getBoundingClientRect().height || 300;
+
+  const countryProjection = d3.geoMercator().fitSize([cw, ch], feature);
+  const countryPath = d3.geoPath().projection(countryProjection);
+
+  // Draw country
+  countryMapSvg.append("path")
+    .datum(feature)
+    .attr("d", countryPath)
+    .attr("fill", HIGHLIGHT_FILL)
+    .attr("stroke", "#000")
+    .attr("stroke-width", 1);
+
+  // ---- Draw earthquakes ----
+  const minMag = d3.min(earthquakeData, d => d.mag);
+  const maxMag = d3.max(earthquakeData, d => d.mag);
+  const GradColor = d3.scaleLinear()
+    .domain([minMag, maxMag])
+    .range(["#EB776C", "#E31F07"]) 
+    .interpolate(d3.interpolateLab);
+
+  countryMapSvg.append("g")
+    .attr("class", "earthquakes-map")
+    .selectAll("circle")
+    .data(earthquakeData)
+    .enter()
+    .append("circle")
+    .attr("cx", d => countryProjection([d.longitude, d.latitude])[0])
+    .attr("cy", d => countryProjection([d.longitude, d.latitude])[1])
+    .attr("r", d => Math.sqrt(Math.abs(d.mag)) * 2)
+    .attr("fill", d => GradColor(d.mag))
+    .attr("stroke", "#fff")
+    .attr("stroke-width", 0.3)
+    .on("mouseover", function(event, d) {
+        d3.select(this)
+            .transition().duration(150)
+            .attr("fill", d3.color(GradColor(d.mag)).darker(1.2))
+            .attr("r", Math.sqrt(d.mag) * 4);
+    })
+    .on("mouseout", function(_, d) {
+        d3.select(this)
+            .transition().duration(150)
+            .attr("fill", GradColor(d.mag))
+            .attr("r", Math.sqrt(d.mag) * 2);
+    });
+
+
+  // ---- Draw seismic stations (blue triangles) ----
+  const tri = d3.symbol().type(d3.symbolTriangle).size(90);
+
+  countryMapSvg.append("g")
+    .attr("class", "stations-map")
+    .selectAll("path")
+    .data(stationData)
+    .enter()
+    .append("path")
+    .attr("d", tri)
+    .attr("transform", d => {
+      const [x, y] = countryProjection([d.longitude, d.latitude]);
+      return `translate(${x},${y})`;
+    })
+    .attr("fill", "#2aa3ff")
+    .attr("stroke", "#fff")
+    .attr("stroke-width", 0.8)
+    .on("mouseover", function(event, d) {
+  d3.select(this)
+    .transition().duration(120)
+    .attr("transform", () => {
+      const [x, y] = countryProjection([d.longitude, d.latitude]);
+      return `translate(${x},${y}) scale(1.2)`;
+    })
+    .attr("fill", "#0033a0"); // darker blue
+})
+.on("mouseout", function(event, d) {
+  d3.select(this)
+    .transition().duration(120)
+    .attr("transform", () => {
+      const [x, y] = countryProjection([d.longitude, d.latitude]);
+      return `translate(${x},${y}) scale(1)`;
+    })
+    .attr("fill", "#2aa3ff"); // normal blue
+});
+
+}
+
+
+function handleCountrySearch(query) {
+  if (!countriesData || !countriesData.length) {
+    d3.select("#country-result").text("World geometry not yet loaded. Try again in a moment.");
     return;
   }
 
-  rotateGlobeToCity(+city.lat, +city.lng);
+  if (!query || !query.trim()) {
+    d3.select("#country-result").text("Please enter a country name.");
+    return;
+  }
+  const q = query.trim().toLowerCase();
 
-  // Display placeholder seismic info
-  const distanceKm = Math.round(Math.random() * 500);
-  const avgMagnitude = (Math.random() * 4 + 2).toFixed(1);
-  cityResult.textContent = `${city.city}, ${city.country}: ~${distanceKm} km from nearest seismic network. Average local magnitude: M${avgMagnitude}`;
+  let countryFeature = countriesData.find(c => {
+    const props = c.properties || {};
+    const candidates = [
+      props.name,
+      props.NAME,
+      props.NAME_EN,
+      props.admin,
+      props.name_en
+    ].filter(Boolean);
 
-  // Plot red dot on globe
-  cityMarkerGroup.selectAll("*").remove();
-  cityMarkerGroup.append("circle")
-    .attr("cx", () => projection2([+city.lng, +city.lat])[0])
-    .attr("cy", () => projection2([+city.lng, +city.lat])[1])
-    .attr("r", 5)
-    .attr("fill", "red")
-    .attr("stroke", "#fff")
-    .attr("stroke-width", 0.5);
+    if (props.iso_a3) candidates.push(props.iso_a3);
+    if (props.iso_a2) candidates.push(props.iso_a2);
 
-  // Highlight country
-  const countryData = countriesData.find(c =>
-    c.properties.name.toLowerCase().includes(city.country.toLowerCase())
-  );
+    return candidates.some(s => String(s).toLowerCase().includes(q));
+  });
 
-  if (countryData) {
-    // Draw zoomed-in country map
-    countryMapSvg.selectAll("*").remove();
-    const cw = countryMapSvg.node().getBoundingClientRect().width;
-    const ch = countryMapSvg.node().getBoundingClientRect().height;
-    const countryProjection = d3.geoMercator().fitSize([cw, ch], countryData);
-    const countryPath = d3.geoPath().projection(countryProjection);
+  if (!countryFeature) {
+    countryFeature = countriesData.find(c => {
+      const p = c.properties || {};
+      return (p.name && p.name.toLowerCase() === q) || (p.admin && p.admin.toLowerCase() === q);
+    });
+  }
 
-    countryMapSvg.append("path")
-      .datum(countryData)
-      .attr("d", countryPath)
-      .attr("fill", "#ff4c4c")
-      .attr("stroke", "#000")
-      .attr("stroke-width", 1);
+  if (!countryFeature) {
+    d3.select("#country-result").text(`No country matching "${query}" found.`);
+    // clear selection
+    selectedCountry = null;
+    svg2.selectAll(".country2").attr("fill", DEFAULT_FILL);
+    drawCountryMap(null);
+    return;
+  }
+
+  const centroid = d3.geoCentroid(countryFeature); // [lon, lat]
+  if (isFinite(centroid[0]) && isFinite(centroid[1])) {
+    rotateToLonLat(centroid[0], centroid[1], 1200);
+  }
+
+  selectedCountry = countryFeature;
+  svg2.selectAll(".country2")
+    .attr("fill", d => (sameFeature(d, selectedCountry) ? HIGHLIGHT_FILL : DEFAULT_FILL));
+
+  drawCountryMap(countryFeature);
+
+  const displayName = countryFeature.properties && (countryFeature.properties.name || countryFeature.properties.admin || "Selected country");
+  d3.select("#country-result").text(`${displayName}`);
+}
+
+// wire up input and button (including Enter key)
+const inputEl = document.getElementById("country-input");
+const btn = document.getElementById("country-search-btn");
+
+btn.addEventListener("click", () => handleCountrySearch(inputEl.value));
+inputEl.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    handleCountrySearch(inputEl.value);
   }
 });
 
-function rotateGlobeToCity(lat, lon) {
-    const target = [-lon, -lat]; // D3 orthographic rotation is [lambda, phi, gamma]
-    const currentRotation = projection2.rotate();
-    const r0 = currentRotation; // starting rotation
-    const r1 = target;          // target rotation
-    const duration = 1000;      // ms
 
-    d3.transition()
-        .duration(duration)
-        .tween("rotate", () => {
-            const interp = d3.interpolate(r0, r1);
-            return t => {
-                projection2.rotate(interp(t));
-                svg2.selectAll(".country2").attr("d", path2);
-                svg2.select(".globe-sphere2").attr("d", path2);
-
-                // update city dot position if one exists
-                cityMarkerGroup.selectAll("circle")
-                    .attr("cx", () => projection2([+selectedCity.lng, +selectedCity.lat])[0])
-                    .attr("cy", () => projection2([+selectedCity.lng, +selectedCity.lat])[1]);
-            };
-        });
-}
 
