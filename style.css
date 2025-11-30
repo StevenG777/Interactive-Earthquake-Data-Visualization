@@ -349,7 +349,7 @@ section, .hero {
 
 
 /* ========================== */
-/* PAGE 4
+/* PAGE 4: Globe + Country Info + City Search */
 /* ========================== */
 #country-detail-section {
   background: linear-gradient(to bottom, #131212, #0f0d0d);
@@ -370,6 +370,7 @@ section, .hero {
   justify-content: center;
   align-items: center;
   height: 80%;
+  position: relative;
 }
 
 .country-info {
@@ -392,11 +393,9 @@ section, .hero {
   background: rgba(0,0,0,0.03);
 }
 
-#globe-svg, #globe-svg-r, #globe-svg-2, #country-map {
+#globe-svg-2 {
   width: 100%;
   height: 100%;
-  max-height: 100vh;
-  display: block;
 }
 
 #globe-tooltip {
@@ -410,6 +409,46 @@ section, .hero {
   display: none;
   z-index: 2000;
 }
+
+/* City search bar */
+.city-search {
+  display: flex;
+  gap: 0.5rem;
+  margin: 0.5rem 0;
+}
+
+#city-input {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  border: 1px solid #444;
+  background-color: #222;
+  color: #fff;
+}
+
+#city-input::placeholder {
+  color: #aaa;
+}
+
+#city-search-btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  background-color: #2156e9;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+#city-search-btn:hover {
+  background-color: #1440a5;
+}
+
+#city-info p {
+  margin: 0.5rem 0;
+  color: #c9c9c9;
+}
+
 
 /* ========================== */
 /* PAGE 5

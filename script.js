@@ -652,85 +652,121 @@ function resizeGlobe1(selection, pathFunc, projectionFunc, idNameSphere, classNa
 // ----------------------------------------------------------------------------
 
 // ==========================
-// PAGE 4: GLOBE 2 
+// PAGE 4: GLOBE 2 + CITY SEARCH
 // ==========================
 const svg2 = d3.select("#globe-svg-2");
 const path2 = d3.geoPath();
 const projection2 = d3.geoOrthographic().clipAngle(90);
 
+// Globe sphere
 svg2.append("path")
-    .datum({type:"Sphere"})
-    .attr("class", "globe-sphere2")
-    .attr("fill", "#000")
-    .attr("stroke", "#fff")
-    .attr("stroke-width", 0.5);
+  .datum({ type: "Sphere" })
+  .attr("class", "globe-sphere2")
+  .attr("fill", "#000")
+  .attr("stroke", "#fff")
+  .attr("stroke-width", 0.5);
 
-drag_behavior(svg2);
+// Keep drag behavior
+drag_behavior(svg2); // your existing drag function
 
+// Countries group
 const countriesGroup2 = svg2.append("g").attr("class", "countries");
 const countryMapSvg = d3.select("#country-map");
 
-let selectedCountry = null;
+// City marker group
+const cityMarkerGroup = svg2.append("g").attr("class", "city-marker-group");
 
-d3.json("https://unpkg.com/world-atlas@2/countries-110m.json").then(worldData => {
-    const countries = topojson.feature(worldData, worldData.objects.countries).features;
+let cities = [];
 
-    countriesGroup2.selectAll(".country2")
-        .data(countries)
-        .enter()
-        .append("path")
-        .attr("class", "country2")
-        .attr("fill", "#222222")
-        .attr("stroke", "#fff")
-        .attr("stroke-width", 0.5)
-        .on("mouseover", (event, d) => {
-            if (d !== selectedCountry) d3.select(event.currentTarget).attr("fill", "#2156e9ff");
-            tooltip.text(d.properties.name)
-                .style("display","block")
-                .style("left", (event.pageX + 10) + "px")
-                .style("top",  (event.pageY + 10) + "px");
-        })
-        .on("mouseout", (event, d) => {
-            if (d !== selectedCountry) d3.select(event.currentTarget).attr("fill", "#222222");
-            tooltip.style("display","none");
-        })
-        .on("click", (event, d) => {
-            if (selectedCountry) {
-                countriesGroup2.selectAll(".country2")
-                    .filter(c => c.properties.name === selectedCountry.properties.name)
-                    .attr("fill", "#222222");
-            }
-            d3.select(event.currentTarget).attr("fill", "#ffb347");
-            selectedCountry = d;
-
-            d3.select("#country-name").text(d.properties.name);
-            d3.select("#country-details").text(`You clicked on ${d.properties.name}.`);
-
-            // draw country map
-            countryMapSvg.selectAll("*").remove();
-            const cw = countryMapSvg.node().getBoundingClientRect().width;
-            const ch = countryMapSvg.node().getBoundingClientRect().height;
-            const countryProjection = d3.geoMercator().fitSize([cw, ch], d);
-            const countryPath = d3.geoPath().projection(countryProjection);
-
-            countryMapSvg.append("path")
-                .datum(d)
-                .attr("d", countryPath)
-                .attr("fill", "#2156e9ff")
-                .attr("stroke", "#000")
-                .attr("stroke-width", 1);
-      });
-
-    resizeGlobe2();
+// Load world cities CSV
+d3.csv("worldcities.csv").then(data => {
+  cities = data; // dataset has columns: city, city_ascii, lat, lng, country, iso2, iso3, admin_name, capital, population, id
 });
 
-function resizeGlobe2(){
+// Load countries
+let countriesData = [];
+d3.json("https://unpkg.com/world-atlas@2/countries-110m.json").then(worldData => {
+  countriesData = topojson.feature(worldData, worldData.objects.countries).features;
+
+  countriesGroup2.selectAll(".country2")
+    .data(countriesData)
+    .enter()
+    .append("path")
+    .attr("class", "country2")
+    .attr("fill", "#222222")
+    .attr("stroke", "#fff")
+    .attr("stroke-width", 0.5);
+
+  resizeGlobe2();
+});
+
+// Resize globe function
+function resizeGlobe2() {
   const cw = svg2.node().parentNode.getBoundingClientRect().width;
   svg2.attr("width", cw).attr("height", cw);
-  projection2.translate([cw/2, cw/2]).scale(cw/2 * 0.9);
+  projection2.translate([cw / 2, cw / 2]).scale(cw / 2 * 0.9);
   path2.projection(projection2);
   svg2.select(".globe-sphere2").attr("d", path2);
   svg2.selectAll(".country2").attr("d", path2);
-
 }
 window.addEventListener("resize", resizeGlobe2);
+
+// ==========================
+// CITY SEARCH FUNCTIONALITY
+// ==========================
+const cityInput = document.getElementById("city-input");
+const cityBtn = document.getElementById("city-search-btn");
+const cityResult = document.getElementById("city-result");
+
+cityBtn.addEventListener("click", () => {
+  const input = cityInput.value.trim().toLowerCase();
+  if (!input) return;
+
+  // Find city (match city or city_ascii)
+  const city = cities.find(c =>
+    c.city.toLowerCase() === input ||
+    c.city_ascii.toLowerCase() === input
+  );
+
+  if (!city) {
+    cityResult.textContent = "City not found. Try another city.";
+    return;
+  }
+
+  // Display placeholder seismic info
+  const distanceKm = Math.round(Math.random() * 500);
+  const avgMagnitude = (Math.random() * 4 + 2).toFixed(1);
+  cityResult.textContent = `${city.city}, ${city.country}: ~${distanceKm} km from nearest seismic network. Average local magnitude: M${avgMagnitude}`;
+
+  // Plot red dot on globe
+  cityMarkerGroup.selectAll("*").remove();
+  cityMarkerGroup.append("circle")
+    .attr("cx", () => projection2([+city.lng, +city.lat])[0])
+    .attr("cy", () => projection2([+city.lng, +city.lat])[1])
+    .attr("r", 5)
+    .attr("fill", "red")
+    .attr("stroke", "#fff")
+    .attr("stroke-width", 0.5);
+
+  // Highlight country
+  const countryData = countriesData.find(c =>
+    c.properties.name.toLowerCase().includes(city.country.toLowerCase())
+  );
+
+  if (countryData) {
+    // Draw zoomed-in country map
+    countryMapSvg.selectAll("*").remove();
+    const cw = countryMapSvg.node().getBoundingClientRect().width;
+    const ch = countryMapSvg.node().getBoundingClientRect().height;
+    const countryProjection = d3.geoMercator().fitSize([cw, ch], countryData);
+    const countryPath = d3.geoPath().projection(countryProjection);
+
+    countryMapSvg.append("path")
+      .datum(countryData)
+      .attr("d", countryPath)
+      .attr("fill", "#ff4c4c")
+      .attr("stroke", "#000")
+      .attr("stroke-width", 1);
+  }
+});
+
