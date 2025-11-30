@@ -17,14 +17,14 @@
 <body>
 
   <!-- Page 1 (Intro)-->
-<header class="hero">
-  <div class="hero-bg"></div>
+<header id="hero" class="hero">
+  <div class="hero-bg"></div> <!-- animated background -->
   <h1>Shaking Across Scales: Global Earthquake Trends</h1>
   <p>
-    On a planet of constant motions, hundreds of earthquakes ripple across continents and fault lines.
-    While some regions rumble under dense seismic sensors and others shake almost unnoticed, most never
-    make headlines. What will this entail for the distance across seismic stations? Does being in a "danger zone"
-    affect us tremendously in times of danger?
+    On a planet of constant motion, hundreds of earthquakes ripple across continents.
+    While regions with dense seimic networks illuminate even the tiniest of tremors, other quakes slip 
+    by unnoticed, and only a fraction make headlines. Is the real fault line hiding not beneath us, 
+    but in the data we rely on? Danger often reflects where the instruments are, not where the earth shakes most.
   </p>
 </header>
 
@@ -64,7 +64,7 @@
   </div>
 
     <div id="earth-layer-info" class="info-box">
-      Hover over the middle of each layer or press tab to learn more.
+      Hover over or press tab to learn more.
     </div>
 
 </section>
@@ -72,13 +72,16 @@
   <!-- Page 3 (Globe 1)-->
 <section id="map-section">
 
-  <div class="globe-column">
-    <div class="globe-container globe-top">
-      <p class="globe-instruction">Hover over the globes to see details.</p>
-      <svg id="globe-svg-r"></svg>
-    </div>
+<div class="globe-column">
+  <div class="globe-container globe-top">
+    <p class="globe-instruction">Hover over the globes to see details.</p>
+    <div class="globe-title1">Seismic Network</div> <!-- Title for top globe -->
+
+    <svg id="globe-svg-r"></svg>
+  </div>
 
   <div class="globe-container globe-bottom-wrapper">
+    <div class="globe-title2">Earthquake Magnitude</div> <!-- Title for bottom globe -->
     <div class="legend-container">
       <div class="legend-title">Magnitude</div>
       <div class="legend-bar"></div>
@@ -88,15 +91,14 @@
         <span id="legend-min">0</span>
       </div>
     </div>
-  
-      <svg id="globe-svg"></svg>
-
-    </div>
+    <svg id="globe-svg"></svg>
   </div>
+</div>
+
 
   <div class="story-column">
     <div class="story-text">
-      <h2>Why Do Earthquakes Occur?</h2>
+      <h1>Why Do Earthquakes Occur?</h1>
 
         <p>
           Earthquakes arise from several natural and anthropogenic processes that
@@ -181,16 +183,40 @@
   </section>
 
   <!-- Page 5: California Earthquake Heatmap -->
-  <section id="heatmap-section" class="full-page">
-    <h2>California Earthquake Heatmap</h2>
-    <p>Animated heatmap of earthquakes across California over time.</p>
-    <div style="width: 100%; height: 80vh;">
+<section id="heatmap-section" class="full-page">
+  <h2>California Earthquake Heatmap</h2>
+  <p>Animated heatmap of earthquakes across California over time.</p>
+
+  <div class="heatmap-row">
+    
+    <!-- LEFT: Heatmap -->
+    <div class="heatmap-left">
       <iframe 
-        src="CA_Heatmaps/california_earthquakes_heatmap_animated.html" 
-        style="width:100%; height:100%; border:none;">
+        src="CA_Heatmaps/california_earthquakes_heatmap_animated.html">
       </iframe>
     </div>
-  </section>
+
+    <!-- RIGHT: Feature boxes -->
+    <div class="heatmap-features">
+      <div class="feature-box1">
+        <h3>Seismic Hotspots </h3>
+        <p> → Most high-magnitude CA earthquakes occur along the San Andreas fault.</p>
+        <p> → Hotspots reveal where ground is under most stress.</p>  
+      </div>
+      <div class="feature-box1">
+        <h3>Magnitude Distribution</h3>
+        <p> → While most earthquakes are small (M1-M3), minor tremors facilitate in mapping stress
+          along faults.
+        </p>
+      </div>
+      <div class="feature-box1">
+        <h3>Temporal Trends</h3>
+        <p> → Earthquake activity fluctuates over time; clusters form after major events. </p>
+      </div>
+    </div>
+  </div>
+</section>
+
 
   <!-- JS -->
   <script src="script.js" type="module"></script>

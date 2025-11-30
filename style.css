@@ -64,26 +64,44 @@ section, .hero {
 /* Page 1 */
 /* ========================== */
 .hero {
-    position: relative;
-    width: 100%;
-    height: 100vh;
-    background: linear-gradient(to bottom, #eae6e6, #414040);
-    overflow: hidden;
-    color: #fff;
-    text-align: center;
-    padding: 3rem 2rem;
-    gap: 1rem;
-      z-index: 1;
-
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  text-align: center;
+  color: #fff;
+  padding: 3rem 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  z-index: 1;
 }
 
 .hero-bg {
   position: absolute;
-  top: 0; left: 0;
-  width: 100%;
-  height: 100%;
+  top:0; left:0;
+  width:100%;
+  height:100%;
+  background: linear-gradient(to bottom, #504f4f, #272626);
   animation: pulse 8s infinite alternate;
-  z-index: 0;
+  z-index:0;
+}
+
+.hero h1,
+.hero p {
+  opacity: 0;
+}
+
+.hero h1.animate {
+  opacity: 1;
+  animation: fadeInUp 1.5s ease forwards;
+}
+
+.hero p.animate {
+  opacity: 1;
+  animation: fadeInUp 2s ease forwards;
 }
 
 .hero h1 {
@@ -92,7 +110,6 @@ section, .hero {
   margin-bottom: 1rem;
   line-height: 1.05;
   text-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
-  animation: fadeInUp 1.5s ease forwards;
 }
 
 .hero p {
@@ -100,7 +117,6 @@ section, .hero {
   max-width: 800px;
   line-height: 1.6;
   opacity: 0.9;
-  animation: fadeInUp 2s ease forwards;
 }
 
 @keyframes pulse {
@@ -114,12 +130,11 @@ section, .hero {
   100% { opacity: 1; transform: translateY(0); }
 }
 
-
 /* ========================== */
 /* Page 2 */
 /* ========================== */
 #earth-structure-section {
-    background: linear-gradient(to bottom, #414040, #1e1e1e);
+    background: linear-gradient(to bottom, #272626, #1e1e1e);
     color: #fff;
     position: relative;
     padding: 2rem;
@@ -146,7 +161,6 @@ section, .hero {
     display: block;
 }
 
-/* hotspots */
 .hotspot.invisible {
     position: absolute;
     transform: translate(-50%, -50%);
@@ -160,11 +174,9 @@ section, .hero {
 }
 
 .hotspot.invisible:focus-visible {
-    box-shadow: 0 0 0 3px rgba(90,144,255,0.16);
     border-radius: 6px;
 }
 
-/* info box */
 #earth-layer-info {
     /* This is Baixi, I commented out, pls lmk if any of this need to be used */
     
@@ -189,10 +201,26 @@ section, .hero {
 
 .globe-instruction {
   font-size: 0.85rem;
-  color: rgba(255,255,255,0.7);
+  color: rgba(137, 136, 136, 0.7);
   text-align: center;
   margin-bottom: 0.5rem;
   bottom: 5rem;
+}
+
+.globe-title1 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 0.05rem;
+  color: #2f56a2; /* or whatever fits your design */
+}
+
+.globe-title2 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 0.05rem;
+  color: #a02d2d; /* or whatever fits your design */
 }
 
 .globe-column {
@@ -216,7 +244,7 @@ section, .hero {
 
 .legend-container {
   position: absolute;     /* positioned relative to globe-column */
-  top: 400px;                 /* align with top of bottom globe */
+  top: 450px;                 /* align with top of bottom globe */
   left: -70px;            /* adjust to sit nicely on the left */
   display: flex;
   align-items: flex-start;
@@ -295,7 +323,6 @@ section, .hero {
   height: 100%;           /* fill the grid row */
   overflow: auto;         /* allow scrolling inside box */
 }
-
 
 .feature-box h3 {
   margin: 0;
@@ -383,6 +410,7 @@ section, .hero {
 /* ========================== */
 /* HEATMAP / PAGE 5 */
 /* ========================== */
+
 #heatmap-section {
   min-height: 100vh;
   width: 100%;
@@ -390,17 +418,73 @@ section, .hero {
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  background: linear-gradient(to bottom, #0f0d0d, #000000);
-  padding: 2rem;
+  background: #000; /* black background */
+  color: #fff;      /* white text */
+  padding: 1rem;
   box-sizing: border-box;
-  color: #fff;
 }
 
-#heatmap-section iframe {
+/* Flex row: iframe on left, feature boxes on right */
+.heatmap-row {
   width: 100%;
-  height: 80vh;
+  height: 100%;
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+/* LEFT: Heatmap container */
+.heatmap-left {
+  flex: 3;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 500px;
+}
+
+.heatmap-left iframe {
+  width: 100%;
+  max-width: 100%;
+  height: 70vh;
   border: none;
-  border-radius: 8px;
+  border-radius: 1rem;
+}
+
+/* RIGHT: Feature box column */
+.heatmap-features {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Feature boxes */
+.feature-box1 {
+  background: #2d342d; /* blue background */
+  color: #fff;          /* white text */
+  border-radius: 10px;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  display: flex;
+  flex-direction: column;
+  min-height: 92px;
+  max-height: 250px;
+  overflow: auto;
+}
+
+.feature-box1 h3 {
+  font-size: 1.5rem;   /* smaller font */
+  line-height: 1.2;     /* reduce vertical spacing */
+  margin: 0.5rem 0;    /* less gap between paragraphs */
+  text-align: center;
+}
+
+.feature-box1 p {
+  font-size: 0.85rem;   /* smaller font */
+  line-height: 1.2;     /* reduce vertical spacing */
+  margin: 0.25rem 0;    /* less gap between paragraphs */
+  padding-left: 0.5rem;
+  color: #c9c9c9;
 }
 
 /* ========================== */
@@ -446,6 +530,23 @@ section, .hero {
     max-height: calc(100% - 6rem);
   }
 }
+
+@media (max-width: 1200px) {
+  .heatmap-row {
+    flex-direction: column; /* stack iframe and features on smaller screens */
+    align-items: center;
+  }
+
+  .heatmap-left, .heatmap-features {
+    flex: none;
+    width: 90%;
+  }
+
+  .heatmap-left iframe {
+    height: 60vh;
+  }
+}
+
 
 /* small UX polish */
 a, button { cursor: pointer; }

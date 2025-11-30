@@ -140,6 +140,27 @@ window.addEventListener("resize", updateActiveDot);
 sections.forEach(section => observer.observe(section));
 
 // ==========================
+// PAGE 1: INTRO 
+// ==========================
+// Select the hero and its text elements
+const hero = document.querySelector(".hero");
+const heroElements = hero.querySelectorAll("h1, p");
+
+// Intersection Observer to trigger animation on scroll
+const heroObserver = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      heroElements.forEach(el => {
+        el.classList.remove("animate");
+        void el.offsetWidth; // trigger reflow
+        el.classList.add("animate");
+      });
+    }
+  });
+}, { threshold: 0.25 }); // lower threshold to 25%
+heroObserver.observe(hero);
+
+// ==========================
 // PAGE 2: EARTH LAYERS PLOT
 // ==========================
 
@@ -147,7 +168,7 @@ function initHotspots() {
   const hotspots = Array.from(document.querySelectorAll(".hotspot"));
   const infoBox = document.getElementById("earth-layer-info");
   const earthSection = document.getElementById("earth-structure-section");
-  const defaultMsg = "Hover over middle of each layer to learn more.";
+  const defaultMsg = "Hover over or press tab to learn more.";
   if (!infoBox) { console.warn("No #earth-layer-info element found."); return; }
   if (!hotspots.length) { console.warn("No .hotspot elements found. Check your HTML."); return; }
 
