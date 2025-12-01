@@ -675,7 +675,7 @@ let selectedCountry = null; // will hold the selected feature
 
 // Default fill for countries
 const DEFAULT_FILL = "#222222";
-const HIGHLIGHT_FILL = "#4c8e57ff"; 
+const HIGHLIGHT_FILL = "#4eabe1ff"; 
 
 // Load countries topojson (world-atlas)
 d3.json("https://unpkg.com/world-atlas@2/countries-110m.json").then(worldData => {
@@ -739,10 +739,8 @@ function rotateToLonLat(lon, lat, duration = 1000) {
     });
 }
 
-
 function drawCountryMap(feature) {
   countryMapSvg.selectAll("*").remove();
-
   if (!feature) return;
 
   const cw = countryMapSvg.node().getBoundingClientRect().width || 400;
@@ -759,47 +757,27 @@ function drawCountryMap(feature) {
     .attr("stroke", "#000")
     .attr("stroke-width", 1);
 
-  // ---- Draw earthquakes ----
-  const minMag = d3.min(earthquakeData, d => d.mag);
-  const maxMag = d3.max(earthquakeData, d => d.mag);
-  const GradColor = d3.scaleLinear()
-    .domain([minMag, maxMag])
-    .range(["#EB776C", "#E31F07"]) 
-    .interpolate(d3.interpolateLab);
+  // Always draw only seismic stations for the selected country
+  const stationsInCountry = stationData.filter(d => d3.geoContains(feature, [d.longitude, d.latitude]));
+  if (!stationsInCountry || stationsInCountry.length === 0) {
+    // Optional: show a message inside the country map
+    countryMapSvg.append("text")
+      .attr("x", cw / 2)
+      .attr("y", ch / 2)
+      .attr("text-anchor", "middle")
+      .attr("dominant-baseline", "middle")
+      .attr("fill", "#ffffffcc")
+      .style("font-size", "12px")
+      .text("No stations in this country");
+    return;
+  }
 
-  countryMapSvg.append("g")
-    .attr("class", "earthquakes-map")
-    .selectAll("circle")
-    .data(earthquakeData)
-    .enter()
-    .append("circle")
-    .attr("cx", d => countryProjection([d.longitude, d.latitude])[0])
-    .attr("cy", d => countryProjection([d.longitude, d.latitude])[1])
-    .attr("r", d => Math.sqrt(Math.abs(d.mag)) * 2)
-    .attr("fill", d => GradColor(d.mag))
-    .attr("stroke", "#fff")
-    .attr("stroke-width", 0.3)
-    .on("mouseover", function(event, d) {
-        d3.select(this)
-            .transition().duration(150)
-            .attr("fill", d3.color(GradColor(d.mag)).darker(1.2))
-            .attr("r", Math.sqrt(d.mag) * 4);
-    })
-    .on("mouseout", function(_, d) {
-        d3.select(this)
-            .transition().duration(150)
-            .attr("fill", GradColor(d.mag))
-            .attr("r", Math.sqrt(d.mag) * 2);
-    });
-
-
-  // ---- Draw seismic stations (blue triangles) ----
   const tri = d3.symbol().type(d3.symbolTriangle).size(90);
 
   countryMapSvg.append("g")
     .attr("class", "stations-map")
     .selectAll("path")
-    .data(stationData)
+    .data(stationsInCountry)
     .enter()
     .append("path")
     .attr("d", tri)
@@ -811,26 +789,38 @@ function drawCountryMap(feature) {
     .attr("stroke", "#fff")
     .attr("stroke-width", 0.8)
     .on("mouseover", function(event, d) {
-  d3.select(this)
-    .transition().duration(120)
-    .attr("transform", () => {
-      const [x, y] = countryProjection([d.longitude, d.latitude]);
-      return `translate(${x},${y}) scale(1.2)`;
+      d3.select(this)
+        .transition().duration(120)
+        .attr("transform", () => {
+          const [x, y] = countryProjection([d.longitude, d.latitude]);
+          return `translate(${x},${y}) scale(1.2)`;
+        })
+        .attr("fill", "#0033a0"); // darker blue
+      // Optional: show tooltip if you have tooltip variable
+      if (typeof tooltip !== "undefined") {
+        tooltip.html(`
+          <strong>${d["station code"] || ""}</strong><br>
+          ${d.name || ""}<br>
+          <strong>Network:</strong> ${d["network code"] || ""}<br>
+          <strong>Telemetry:</strong> ${d.telemetry || ""}<br>
+          <strong>Elevation:</strong> ${d.elevation || ""} m
+        `)
+        .style("display", "block")
+        .style("left", (event.pageX + 10) + "px")
+        .style("top", (event.pageY + 10) + "px");
+      }
     })
-    .attr("fill", "#0033a0"); // darker blue
-})
-.on("mouseout", function(event, d) {
-  d3.select(this)
-    .transition().duration(120)
-    .attr("transform", () => {
-      const [x, y] = countryProjection([d.longitude, d.latitude]);
-      return `translate(${x},${y}) scale(1)`;
-    })
-    .attr("fill", "#2aa3ff"); // normal blue
-});
-
+    .on("mouseout", function(event, d) {
+      d3.select(this)
+        .transition().duration(120)
+        .attr("transform", () => {
+          const [x, y] = countryProjection([d.longitude, d.latitude]);
+          return `translate(${x},${y}) scale(1)`;
+        })
+        .attr("fill", "#2aa3ff"); // normal blue
+      if (typeof tooltip !== "undefined") tooltip.style("display", "none");
+    });
 }
-
 
 function handleCountrySearch(query) {
   if (!countriesData || !countriesData.length) {
@@ -887,8 +877,14 @@ function handleCountrySearch(query) {
 
   drawCountryMap(countryFeature);
 
+  const stationsInCountry = stationData.filter(d =>
+  d3.geoContains(countryFeature, [d.longitude, d.latitude])
+ )  
+
   const displayName = countryFeature.properties && (countryFeature.properties.name || countryFeature.properties.admin || "Selected country");
-  d3.select("#country-result").text(`${displayName}`);
+  d3.select("#country-result").text(
+  `${displayName}: ${stationsInCountry.length} station${stationsInCountry.length === 1 ? "" : "s"}`
+);
 }
 
 // wire up input and button (including Enter key)

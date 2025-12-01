@@ -396,7 +396,6 @@ section, .hero {
   height: 100%;
 }
 
-/* City search bar */
 .country-search {
   display: flex;
   gap: 0.5rem;
@@ -434,6 +433,24 @@ section, .hero {
   margin: 0.5rem 0;
   color: #c9c9c9;
 }
+
+#map-toggle-buttons button {
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  background: #444;
+  color: #fff;
+  transition: background 0.2s;
+}
+
+#map-toggle-buttons button.active-btn {
+  background: #2aa3ff; /* highlight active */
+  color: #fff;
+}
+
+
 
 /* ========================== */
 /* PAGE 5
@@ -486,7 +503,7 @@ section, .hero {
 }
 
 .feature-box1 {
-  background: #2d342d; /* blue background */
+  background: #903b3b; /* blue background */
   color: #fff;          /* white text */
   border-radius: 10px;
   transition: transform 0.18s ease, box-shadow 0.18s ease;
