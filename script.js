@@ -648,7 +648,7 @@ function resizeGlobe1(selection, pathFunc, projectionFunc, idNameSphere, classNa
 // ----------------------------------------------------------------------------
 
 // ==========================
-// PAGE 4: GLOBE 2 + Country SEARCH (updated)
+// PAGE 4: GLOBE 2 + Country SEARCH (patched)
 // ==========================
 const svg2 = d3.select("#globe-svg-2");
 const path2 = d3.geoPath();
@@ -662,9 +662,6 @@ svg2.append("path")
   .attr("stroke", "#fff")
   .attr("stroke-width", 0.5);
 
-// Keep drag behavior (your existing drag function)
-if (typeof drag_behavior === "function") drag_behavior(svg2);
-
 // Countries group
 const countriesGroup2 = svg2.append("g").attr("class", "countries");
 const countryMapSvg = d3.select("#country-map");
@@ -675,7 +672,12 @@ let selectedCountry = null; // will hold the selected feature
 
 // Default fill for countries
 const DEFAULT_FILL = "#222222";
-const HIGHLIGHT_FILL = "#4eabe1ff"; 
+const HIGHLIGHT_FILL = "#4eabe1ff";
+
+// --- station-on-globe setup (new) ---
+// group for station symbols on globe (create once)
+const globeStationsGroup = svg2.append("g").attr("class", "globe-stations");
+const triSymbol = d3.symbol().type(d3.symbolTriangle).size(90);
 
 // Load countries topojson (world-atlas)
 d3.json("https://unpkg.com/world-atlas@2/countries-110m.json").then(worldData => {
@@ -702,13 +704,15 @@ function resizeGlobe2() {
   svg2.attr("width", cw).attr("height", cw);
   projection2.translate([cw / 2, cw / 2]).scale(cw / 2 * 0.9);
   path2.projection(projection2);
-  
+
   svg2.select(".globe-sphere2").attr("d", path2);
-  
   svg2.selectAll(".country2").attr("d", path2);
-  
+
   svg2.selectAll(".country2")
     .attr("fill", d => (selectedCountry && sameFeature(d, selectedCountry)) ? HIGHLIGHT_FILL : DEFAULT_FILL);
+
+  // update globe stations positions/visibility (if a country is selected)
+  plotStationsOnGlobe(selectedCountry);
 }
 window.addEventListener("resize", resizeGlobe2);
 
@@ -735,10 +739,15 @@ function rotateToLonLat(lon, lat, duration = 1000) {
         // update paths as rotation changes
         svg2.selectAll(".country2").attr("d", path2);
         svg2.select(".globe-sphere2").attr("d", path2);
+        // update stations positions & visibility while rotating
+        plotStationsOnGlobe(selectedCountry);
       };
     });
 }
 
+// ---------------------------
+// drawCountryMap (always draws country + stations for that country)
+// ---------------------------
 function drawCountryMap(feature) {
   countryMapSvg.selectAll("*").remove();
   if (!feature) return;
@@ -758,6 +767,19 @@ function drawCountryMap(feature) {
     .attr("stroke-width", 1);
 
   // Always draw only seismic stations for the selected country
+  if (!stationData || !stationData.length) {
+    // If stationData is missing, show a notice
+    countryMapSvg.append("text")
+      .attr("x", cw / 2)
+      .attr("y", ch / 2)
+      .attr("text-anchor", "middle")
+      .attr("dominant-baseline", "middle")
+      .attr("fill", "#ffffffcc")
+      .style("font-size", "12px")
+      .text("Station data unavailable");
+    return;
+  }
+
   const stationsInCountry = stationData.filter(d => d3.geoContains(feature, [d.longitude, d.latitude]));
   if (!stationsInCountry || stationsInCountry.length === 0) {
     // Optional: show a message inside the country map
@@ -822,6 +844,79 @@ function drawCountryMap(feature) {
     });
 }
 
+// ---------------------------
+// Plot stations on the globe (shows only stations inside optional feature)
+// ---------------------------
+function plotStationsOnGlobe(feature = null) {
+  if (!stationData) return;
+
+  const stationsToShow = feature
+    ? stationData.filter(d => d3.geoContains(feature, [d.longitude, d.latitude]))
+    : [];
+
+  // Data join with stable key (station code or coords)
+  const sel = globeStationsGroup.selectAll(".globe-station")
+    .data(stationsToShow, d => d["station code"] || `${d.longitude},${d.latitude}`);
+
+  // EXIT
+  sel.exit().remove();
+
+  // ENTER
+  const enter = sel.enter()
+    .append("path")
+    .attr("class", "globe-station")
+    .attr("d", triSymbol)
+    .attr("fill", "#2aa3ff")
+    .attr("stroke", "#fff")
+    .attr("stroke-width", 0.8)
+    .attr("opacity", 0)
+    .on("mouseover", function(event, d) {
+      d3.select(this)
+        .transition().duration(120)
+        .attr("transform", () => {
+          const p = projection2([d.longitude, d.latitude]);
+          return `translate(${p[0]},${p[1]}) scale(1.4)`;
+        })
+        .attr("fill", "#0033a0");
+      if (typeof tooltip !== "undefined") {
+        tooltip.html(`<strong>${d["station code"]||""}</strong><br>${d.name||""}`)
+          .style("display","block")
+          .style("left",(event.pageX+10)+"px")
+          .style("top",(event.pageY+10)+"px");
+      }
+    })
+    .on("mouseout", function(event, d) {
+      d3.select(this)
+        .transition().duration(120)
+        .attr("transform", () => {
+          const p = projection2([d.longitude, d.latitude]);
+          return `translate(${p[0]},${p[1]}) scale(1)`;
+        })
+        .attr("fill", "#2aa3ff");
+      if (typeof tooltip !== "undefined") tooltip.style("display","none");
+    });
+
+  // ENTER + UPDATE: set position and visibility
+  sel.merge(enter)
+    .attr("transform", d => {
+      const p = projection2([d.longitude, d.latitude]) || [-9999, -9999];
+      return `translate(${p[0]},${p[1]}) scale(1)`;
+    })
+    .attr("opacity", d => {
+      // hide triangles on back hemisphere
+      const λ = d.longitude * Math.PI/180;
+      const φ = d.latitude * Math.PI/180;
+      const rot = projection2.rotate ? projection2.rotate() : [0,0,0];
+      const λ0 = -rot[0] * Math.PI/180;
+      const φ0 = -rot[1] * Math.PI/180;
+      const cosc = Math.sin(φ0)*Math.sin(φ) + Math.cos(φ0)*Math.cos(φ)*Math.cos(λ-λ0);
+      return cosc > 0 ? 0.95 : 0;
+    });
+}
+
+// ---------------------------
+// Country search handling
+// ---------------------------
 function handleCountrySearch(query) {
   if (!countriesData || !countriesData.length) {
     d3.select("#country-result").text("World geometry not yet loaded. Try again in a moment.");
@@ -863,6 +958,7 @@ function handleCountrySearch(query) {
     selectedCountry = null;
     svg2.selectAll(".country2").attr("fill", DEFAULT_FILL);
     drawCountryMap(null);
+    plotStationsOnGlobe(null); // clear globe stations
     return;
   }
 
@@ -875,29 +971,37 @@ function handleCountrySearch(query) {
   svg2.selectAll(".country2")
     .attr("fill", d => (sameFeature(d, selectedCountry) ? HIGHLIGHT_FILL : DEFAULT_FILL));
 
+  // draw the zoomed country map (with stations)
   drawCountryMap(countryFeature);
 
-  const stationsInCountry = stationData.filter(d =>
-  d3.geoContains(countryFeature, [d.longitude, d.latitude])
- )  
+  // show stations on the globe for this selected country
+  plotStationsOnGlobe(selectedCountry);
+
+  // update the country-result text with station count
+  const stationsInCountry = stationData ? stationData.filter(d =>
+    d3.geoContains(countryFeature, [d.longitude, d.latitude])
+  ) : [];
 
   const displayName = countryFeature.properties && (countryFeature.properties.name || countryFeature.properties.admin || "Selected country");
   d3.select("#country-result").text(
-  `${displayName}: ${stationsInCountry.length} station${stationsInCountry.length === 1 ? "" : "s"}`
-);
+    `${displayName}: ${stationsInCountry.length} station${stationsInCountry.length === 1 ? "" : "s"}`
+  );
 }
 
 // wire up input and button (including Enter key)
 const inputEl = document.getElementById("country-input");
 const btn = document.getElementById("country-search-btn");
 
-btn.addEventListener("click", () => handleCountrySearch(inputEl.value));
-inputEl.addEventListener("keydown", (e) => {
-  if (e.key === "Enter") {
-    e.preventDefault();
-    handleCountrySearch(inputEl.value);
-  }
-});
+if (btn && inputEl) {
+  btn.addEventListener("click", () => handleCountrySearch(inputEl.value));
+  inputEl.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleCountrySearch(inputEl.value);
+    }
+  });
+}
+
 
 
 

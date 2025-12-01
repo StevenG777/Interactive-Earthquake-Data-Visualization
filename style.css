@@ -615,7 +615,7 @@ section, .hero {
 
 /* Back */
 .flip-card-back {
-  background-color: rgba(150, 82, 82, 0.8);
+  background-color: rgba(186, 53, 53, 0.8);
   color: #fff;
   transform: rotateY(180deg);
   font-size: 0.9rem;
