@@ -28,8 +28,7 @@
   </p>
 </header>
 
-
-  <!-- Page 2 (Earth layers)-->
+<!-- Page 2 (Earth layers)-->
 <section id="earth-structure-section" class="full-page image-page">
   <h1>Layers of Earth</h1>
 
@@ -69,29 +68,28 @@
 
 </section>
 
-  <!-- Page 3 (Globe 1)-->
+<!-- Page 3 (Globe 1)-->
 <section id="map-section">
 
-<div class="globe-column">
-  <div class="globe-container globe-top">
-    <p class="globe-instruction">Hover over globes for more details. Drag to rotate.</p>
-    <div class="globe-title1">Seismic Network</div> <!-- Title for top globe -->
+  <div class="map-column">
+  <h2>Global Tectonic Plates</h2>
+  <p class="feature-instruction">Hover over each feature to display.</p>
 
-    <svg id="globe-svg-r"></svg>
-  </div>
+  <div id="map-wrapper" style="position: relative; width: 100%; height: 500px;">
+    <!-- SVG -->
+    <svg id="plate-map" width="100%" height="100%"></svg>
 
-  <div class="globe-container globe-bottom-wrapper">
-    <div class="globe-title2">Earthquake Magnitude</div> <!-- Title for bottom globe -->
-    <div class="legend-container">
-      <div class="legend-title">Magnitude</div>
-      <div class="legend-bar"></div>
-      <div class="legend-labels">
-        <span id="legend-max">0</span>
-        <span id="legend-mid">0</span>
-        <span id="legend-min">0</span>
-      </div>
-    </div>
-    <svg id="globe-svg"></svg>
+    <!-- GIF overlay -->
+    <img id="feature-gif" src="" alt="Feature GIF" style="
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: none;
+      pointer-events: none; /* so it doesn’t block interactions */
+    ">
   </div>
 </div>
 
@@ -120,10 +118,18 @@
         </div>
 
         <div class="feature-box">
-          <h3>Fault Lines</h3>
+          <h3>Faults</h3>
           <p>
             Planar fractures in the crust where accumulated stress exceed rock strength and 
             stress thresholds. Elastic energy manifests as an earthquake.
+          </p>
+        </div>
+
+        <div class="feature-box">
+          <h3>Volcanic Activity</h3>
+          <p>
+            Magma movement and fluid pressure changes near volcanoes fracture surrounding rock and can trigger earthquakes 
+            that often precede eruptions.
           </p>
         </div>
 
@@ -133,14 +139,6 @@
             Elastic waves including P-waves (primary compressional waves) and S-waves (secondary-shear waves) transmit distinct
             propagation velocities that interact with Earth's heterogeneous materials. These influence the experienced intensity at 
             surface levels. 
-          </p>
-        </div>
-
-        <div class="feature-box">
-          <h3>Volcanic Activity</h3>
-          <p>
-            Magma movement and fluid pressure changes near volcanoes fracture surrounding rock and can trigger earthquakes 
-            that often precede eruptions.
           </p>
         </div>
 
@@ -166,26 +164,44 @@
   </div>
 </section>
 
-  
+<!-- Page 4 Globes + Country Search -->
 
-<!-- Page 4 (Globe 2 + Country + City Search) -->
 <section id="country-detail-section">
-  <div class="globe-container">
-    <svg id="globe-svg-2"></svg>
+
+  <div class="globe-column">
+          <p class="globe-instruction">Hover over globes for more details. Drag to rotate.</p>
+
+    <!-- Top globe -->
+    <div class="globe-container">
+      <div class="globe-title1">Seismic Network</div>
+      <svg id="globe-svg-r"></svg>
+    </div>
+
+    <!-- Bottom globe -->
+    <div class="globe-container">
+      <div class="globe-title2">Earthquake Magnitude</div>
+      <div class="legend-container">
+        <div class="legend-title">Magnitude</div>
+        <div class="legend-bar"></div>
+        <div class="legend-labels">
+          <span id="legend-max">0</span>
+          <span id="legend-mid">0</span>
+          <span id="legend-min">0</span>
+        </div>
+      </div>
+      <svg id="globe-svg"></svg>
+    </div>
   </div>
 
   <div class="country-info">
     <h2 id="country-name">Search for a country's seismic network station.</h2>
-
     <div class="country-search">
       <input type="text" id="country-input" placeholder="Enter a country name...">
       <button id="country-search-btn">Search</button>
     </div>
-
     <div id="country-info">
       <p id="country-result">Country info will appear here.</p>
     </div>
-
     <svg id="country-map" width="100%" height="300px"></svg>
   </div>
 </section>

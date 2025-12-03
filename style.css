@@ -2,7 +2,6 @@
 /* RESET + BASE STYLES */
 /* ========================== */
 
-
 * { box-sizing: border-box; }
 
 html, body {
@@ -61,7 +60,7 @@ section, .hero {
 }
 
 /* ========================== */
-/* PAGE 1
+/* PAGE 1 (Hero) */
 /* ========================== */
 .hero {
   position: relative;
@@ -131,7 +130,7 @@ section, .hero {
 }
 
 /* ========================== */
-/* PAGE 2
+/* PAGE 2 (Earth layers) */
 /* ========================== */
 #earth-structure-section {
     background: linear-gradient(to bottom, #272626, #1e1e1e);
@@ -146,6 +145,7 @@ section, .hero {
     text-align: center;
 }
 
+/* image + hotspot wrapper */
 .image-hotspot-wrap {
     position: relative;
     width: 90%;
@@ -178,13 +178,6 @@ section, .hero {
 }
 
 #earth-layer-info {
-    /* This is Baixi, I commented out, pls lmk if any of this need to be used */
-    
-    /* position: absolute; */
-    /* bottom: 70px; */
-    /* left: 50%;
-    right: 50%; 
-    transform: translateX(-50%); */
     z-index: 20; 
     background: #1e1e1e;
     color: #fff;
@@ -196,9 +189,82 @@ section, .hero {
 }
 
 /* ========================== */
-/* PAGE 3
+/* PAGE 3 (Map / Story) */
 /* ========================== */
 
+#map-section {
+  background: linear-gradient(to bottom, #1e1e1e, #131212);
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: row;       /* globe(s) + story side-by-side on desktop */
+  align-items: stretch;
+  gap: 1rem;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+.story-text {
+  flex: 1 1 60%;
+  min-width: 100px;
+  max-width: 600px;
+  margin: 0;
+  padding: 1rem;
+  color: #f7f7f7;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  height: 100%;
+  overflow: hidden;
+}
+
+.story-text > h2 { font-size: clamp(1.15rem, 1vw, 1.5rem); }
+.story-text > p { margin: 0 0 0.5rem 0; color: rgba(255,255,255,0.9); }
+
+.feature-instruction { font-size: 0.75rem; }
+
+.feature-boxes {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(2, 1fr);
+  grid-auto-rows: 200px;
+  align-items: stretch;
+}
+
+.feature-box {
+  background: #26262e;
+  color: #ffffff;
+  border-radius: 10px;
+  padding: 15px;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+}
+
+.feature-box h3 { margin: 0; font-size: 1.04rem; line-height: 1.12; }
+.feature-box p { margin: 0; font-size: 0.95rem; line-height: 1.28; color: #cdcdcd; }
+.feature-box:hover { transform: translateY(-6px); box-shadow: 0 12px 30px rgba(0,0,0,0.18); }
+
+#map-section {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+.story-column {
+  flex: 1 1 40%;
+}
+.map-column {
+  flex: 1 1 55%;
+  color:rgb(199, 199, 199)
+}
+
+/* ========================== */
+/* PAGE 4 (Country detail) - Globe sizing & layout fixes */
+/* ========================== */
 .globe-instruction {
   font-size: 0.85rem;
   color: rgb(199, 199, 199);
@@ -212,7 +278,7 @@ section, .hero {
   font-weight: 600;
   text-align: center;
   margin-bottom: 0.05rem;
-  color: #2f56a2; /* or whatever fits your design */
+  color: #2f56a2;
 }
 
 .globe-title2 {
@@ -220,33 +286,40 @@ section, .hero {
   font-weight: 600;
   text-align: center;
   margin-bottom: 0.05rem;
-  color: #a02d2d; /* or whatever fits your design */
+  color: #a02d2d;
 }
 
+/* Globe column */
 .globe-column {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem; /* spacing between globes */
-  position: relative; /* for legend absolute positioning */
-  margin-left: -100px;
+  gap: 1rem;     
+  align-items: center;
 }
 
-#map-section {
-  background: linear-gradient(to bottom, #1e1e1e, #131212);
+/* Globe containers (top and bottom) */
+.globe-container {
   width: 100%;
-  min-height: 100vh;
+  max-width: 300px;   
+  height: 340px;      
+  margin: 0;          
+  padding: 0;         
   display: flex;
-  flex-direction: row;       /* globe(s) + story side-by-side on desktop */
-  align-items: stretch;      /* children fill vertical space */
-  gap: 1rem;
-  padding: 1rem;
-  box-sizing: border-box;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.globe-container svg {
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 
 .legend-container {
-  position: absolute;     /* positioned relative to globe-column */
-  top: 450px;                 /* align with top of bottom globe */
-  left: -70px;            /* adjust to sit nicely on the left */
+  position: absolute;
+  top: 450px;
+  left: -70px;
   display: flex;
   align-items: flex-start;
   gap: 10px;
@@ -277,79 +350,9 @@ section, .hero {
   height: 150px; /* same height as bar */
 }
 
-.legend-labels span {
-  font-size: 10px;
-}
+.legend-labels span { font-size: 10px; }
 
-.story-text {
-  flex: 1 1 60%;
-  min-width: 100px;
-  max-width: 600px;
-  margin: 0;
-  padding: 1rem;
-  color: #f7f7f7;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  height: 100%;        
-  overflow: hidden;   
-}
 
-.story-text > h2 {
-  font-size: clamp(1.15rem, 1vw, 1.5rem);
-}
-.story-text > p {
-  margin: 0 0 0.5rem 0;
-  color: rgba(255,255,255,0.9);
-}
-
-.feature-instruction {
-    font-size: 0.75rem; 
-}
-
-.feature-boxes {
-  display: grid;
-  gap: 12px;
-  grid-template-columns: repeat(2, 1fr); /* 2 equal columns */
-  grid-auto-rows: 200px;                  /* set a fixed row height */
-  align-items: stretch;                   /* force children to fill the row height */
-}
-
-.feature-box {
-  background: #26262e;
-  color: #ffffff;
-  border-radius: 10px;
-  padding: 15px;
-  transition: transform 0.18s ease, box-shadow 0.18s ease;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  width: 100%;            /* fill the grid column */
-  height: 100%;           /* fill the grid row */
-  overflow: auto;         /* allow scrolling inside box */
-}
-
-.feature-box h3 {
-  margin: 0;
-  font-size: 1.04rem;
-  line-height: 1.12;
-}
-
-.feature-box p {
-  margin: 0;
-  font-size: 0.95rem;
-  line-height: 1.28;
-  color: #cdcdcd;
-}
-
-.feature-box:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 12px 30px rgba(0,0,0,0.18);
-}
-
-/* ========================== */
-/* PAGE 4: Globe + Country Info + City Search */
-/* ========================== */
 #country-detail-section {
   background: linear-gradient(to bottom, #131212, #0f0d0d);
   width: 100%;
@@ -362,16 +365,54 @@ section, .hero {
   box-sizing: border-box;
 }
 
-#country-detail-section .globe-container {
-  flex: 0 0 40%;
-  min-width: 100px;
+/* make the globe column stable and responsive */
+#country-detail-section .globe-column {
+  flex: 0 0 38%;                 /* roughly 38% of row on desktop */
+  max-width: 520px;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  gap: 0.5rem;
   align-items: center;
-  height: 80%;
+  justify-content: flex-start;
   position: relative;
 }
 
+/* each globe container is a responsive square where possible */
+#country-detail-section .globe-container {
+  width: 100%;
+  aspect-ratio: 1 / 1;          /* keep globe square where supported */
+  max-height: 500px;
+  min-height: 260px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  position: relative;
+  box-sizing: border-box;
+  padding: 0.2rem;
+  background: transparent;
+}
+
+/* ensure the SVGs fill their containers */
+#country-detail-section svg#globe-svg,
+#country-detail-section svg#globe-svg-r,
+#country-detail-section svg#globe-svg-2 {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+
+/* legend located relative to the globe column (tweak right if desired) */
+#country-detail-section .legend-container,
+#country-detail-section .moved-legend {
+  position: absolute;
+  right: -56px;
+  top: 48%;
+  transform: translateY(-50%);
+  z-index: 30;
+}
+
+/* country info column */
 .country-info {
   flex: 1 1 55%;
   min-width: 260px;
@@ -392,11 +433,6 @@ section, .hero {
   background: rgba(0,0,0,0.03);
 }
 
-#globe-svg-2 {
-  width: 100%;
-  height: 100%;
-}
-
 .country-search {
   display: flex;
   gap: 0.5rem;
@@ -412,9 +448,7 @@ section, .hero {
   color: #fff;
 }
 
-#country-input::placeholder {
-  color: #aaa;
-}
+#country-input::placeholder { color: #aaa; }
 
 #country-search-btn {
   padding: 0.5rem 1rem;
@@ -426,14 +460,9 @@ section, .hero {
   transition: background-color 0.2s;
 }
 
-#country-search-btn:hover {
-  background-color: #626a7c;
-}
+#country-search-btn:hover { background-color: #626a7c; }
 
-#country-info p {
-  margin: 0.5rem 0;
-  color: #c9c9c9;
-}
+#country-info p { margin: 0.5rem 0; color: #c9c9c9; }
 
 #map-toggle-buttons button {
   padding: 6px 12px;
@@ -447,16 +476,16 @@ section, .hero {
 }
 
 #map-toggle-buttons button.active-btn {
-  background: #2aa3ff; /* highlight active */
+  background: #2aa3ff;
   color: #fff;
 }
 
-
+/* slight gap so globes don't feel cramped next to text */
+#country-detail-section .country-info { padding-left: 1rem; }
 
 /* ========================== */
-/* PAGE 5
+/* PAGE 5 (Heatmap) */
 /* ========================== */
-
 #heatmap-section {
   min-height: 100vh;
   width: 100%;
@@ -465,8 +494,7 @@ section, .hero {
   justify-content: flex-start;
   align-items: center;
   background: linear-gradient(to bottom, #131212, #030405);
-
-  color: #fff;      /* white text */
+  color: #fff;
   padding: 1rem;
   box-sizing: border-box;
 }
@@ -504,8 +532,8 @@ section, .hero {
 }
 
 .feature-box1 {
-  background: #903b3b; /* blue background */
-  color: #fff;          /* white text */
+  background: #903b3b;
+  color: #fff;
   border-radius: 10px;
   transition: transform 0.18s ease, box-shadow 0.18s ease;
   display: flex;
@@ -516,29 +544,28 @@ section, .hero {
 }
 
 .feature-box1 h3 {
-  font-size: 1.5rem;   /* smaller font */
-  line-height: 1.2;     /* reduce vertical spacing */
-  margin: 0.5rem 0;    /* less gap between paragraphs */
+  font-size: 1.5rem;
+  line-height: 1.2;
+  margin: 0.5rem 0;
   text-align: center;
 }
 
 .feature-box1 p {
-  font-size: 0.85rem;   /* smaller font */
-  line-height: 1.2;     /* reduce vertical spacing */
-  margin: 0.25rem 0;    /* less gap between paragraphs */
+  font-size: 0.85rem;
+  line-height: 1.2;
+  margin: 0.25rem 0;
   padding-left: 0.5rem;
   color: #c9c9c9;
 }
 
 /* ========================== */
-/* PAGE 6
+/* PAGE 6 (News & Stories) */
 /* ========================== */
-/* Page 6: News and Personal Stories */
 #news-section {
   min-height: 100vh;
   width: 100%;
-  background-color: #000; /* black background */
-  color: #fff;            /* white text */
+  background-color: #000;
+  color: #fff;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -546,16 +573,9 @@ section, .hero {
   box-sizing: border-box;
 }
 
-#news-section h2 {
-  margin-bottom: 0.5rem;
-}
+#news-section h2 { margin-bottom: 0.5rem; }
+#news-section p { margin-bottom: 2rem; font-size: 1rem; }
 
-#news-section p {
-  margin-bottom: 2rem;
-  font-size: 1rem;
-}
-
-/* Flip card row */
 .flip-card-row {
   display: flex;
   justify-content: space-between;
@@ -565,15 +585,13 @@ section, .hero {
   max-width: 1200px;
 }
 
-/* Flip card container */
 .flip-card {
-  flex: 1 1 220px; /* grow, shrink, min-width */
+  flex: 1 1 220px;
   height: 500px;
   perspective: 1000px;
   min-width: 200px;
 }
 
-/* Flip card inner */
 .flip-card-inner {
   position: relative;
   width: 100%;
@@ -585,7 +603,6 @@ section, .hero {
   border-radius: 10px;
 }
 
-/* Front and back faces */
 .flip-card-front,
 .flip-card-back {
   position: absolute;
@@ -601,20 +618,17 @@ section, .hero {
   flex-direction: column;
 }
 
-/* Front: individual images for each card */
 .flip-card-front {
   color: #fff;
   background-size: cover;
   background-position: center;
 }
 
-/* Specific front images */
 .flip-card-front.card1 { background-image: url('images/flipcard1.jpg'); }
 .flip-card-front.card2 { background-image: url('images/flipcard2.jpg'); }
 .flip-card-front.card3 { background-image: url('images/flipcard3.webp'); }
 .flip-card-front.card4 { background-image: url('images/flipcard4.webp'); }
 
-/* Back */
 .flip-card-back {
   background-color: rgba(186, 53, 53, 0.8);
   color: #fff;
@@ -623,35 +637,19 @@ section, .hero {
   text-align: center;
 }
 
-/* Flip effect on hover */
-.flip-card:hover .flip-card-inner {
-  transform: rotateY(180deg);
-}
+/* hover flip for desktop */
+.flip-card:hover .flip-card-inner { transform: rotateY(180deg); }
 
-/* Responsive for smaller screens */
-@media (max-width: 900px) {
-  .flip-card-row {
-    flex-direction: column;
-    align-items: center;
-  }
+/* JS toggle flip for touch devices */
+.flip-card-inner.flipped { transform: rotateY(180deg); }
 
-  .flip-card {
-    width: 90%;
-    min-width: 0;
-    margin-bottom: 1rem;
-  }
-}
-
-/* Optional: add a semi-transparent overlay on front text for readability */
 .flip-card-front h3, .flip-card-front p {
   text-shadow: 0 2px 6px rgba(0,0,0,0.8);
   z-index: 2;
 }
 
-
-
 /* ========================== */
-/* Small Screens
+/* Small Screens / Responsiveness */
 /* ========================== */
 
 @media (max-width: 900px) {
@@ -678,14 +676,40 @@ section, .hero {
     max-height: 50vh;
   }
 
-  /* feature grid switches to 2 columns on small screens (already default) */
+  /* feature grid switches to 2 columns on small screens */
   .feature-boxes { grid-template-columns: repeat(2, minmax(0, 1fr)); max-height: calc(100% - 10rem); }
-
   .feature-box { min-height: 84px; max-height: 180px; padding: 12px; }
   .feature-box h3 { font-size: 1rem; }
   .feature-box p { font-size: 0.9rem; }
+
+  /* stacked legend under globe on small screens */
+  #country-detail-section .legend-container,
+  #country-detail-section .moved-legend {
+    position: static;
+    transform: none;
+    margin-top: 0.6rem;
+    right: auto;
+    top: auto;
+  }
+
+  /* adjust globe container sizing for mobile stacked layout */
+  #country-detail-section .globe-column {
+    width: 100%;
+    max-width: 100%;
+    flex: 0 0 auto;
+    padding: 0;
+  }
+
+  #country-detail-section .globe-container {
+    width: 100%;
+    aspect-ratio: auto;
+    height: 45vh;
+    max-height: 420px;
+    min-height: 240px;
+  }
 }
 
+/* larger screens: allow feature grid to expand */
 @media (min-width: 1100px) {
   .feature-boxes {
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -694,9 +718,10 @@ section, .hero {
   }
 }
 
+/* heatmap responsive tweak */
 @media (max-width: 1200px) {
   .heatmap-row {
-    flex-direction: column; /* stack iframe and features on smaller screens */
+    flex-direction: column;
     align-items: center;
   }
 

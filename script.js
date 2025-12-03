@@ -140,7 +140,7 @@ window.addEventListener("resize", updateActiveDot);
 sections.forEach(section => observer.observe(section));
 
 // ==========================
-// PAGE 1: INTRO 
+// PAGE 1
 // ==========================
 // Select the hero and its text elements
 const hero = document.querySelector(".hero");
@@ -161,7 +161,7 @@ const heroObserver = new IntersectionObserver(entries => {
 heroObserver.observe(hero);
 
 // ==========================
-// PAGE 2: EARTH LAYERS PLOT
+// PAGE 2
 // ==========================
 
 function initHotspots() {
@@ -302,10 +302,41 @@ if (document.readyState === "loading") {
   initHotspots();
 }
 
-// ==========================
-// PAGE 3: GLOBE 1 & GLOBE Right
-// ==========================
+// =================================
+// PAGE 3
+// =================================
 
+const featureGIFs = {
+  "Plate Tectonics": "gifs/plate_tectonics.gif",
+  "Faults": "gifs/fault_lines.webp",
+  "Volcanic Activity": "gifs/volcanic_activity.gif",
+  "Seismic Waves": "gifs/seismic_waves.gif",
+  "Human-Induced Seismicity": "gifs/human_seismicity.gif",
+  "Crustal Adjustments": "gifs/crustal_adjustments.gif"
+};
+
+const gifEl = document.getElementById("feature-gif");
+
+const featureBoxes = document.querySelectorAll(".feature-box");
+
+featureBoxes.forEach(box => {
+  box.addEventListener("mouseenter", () => {
+    const title = box.querySelector("h3").textContent.trim();
+    if (featureGIFs[title]) {
+      gifEl.src = featureGIFs[title];
+      gifEl.style.display = "block";
+    }
+  });
+
+  box.addEventListener("mouseleave", () => {
+    gifEl.style.display = "none";
+    gifEl.src = "";
+  });
+});
+
+// ==========================
+// PAGE 4
+// ==========================
 const svg1 = d3.select("#globe-svg");
 const svg1R = d3.select("#globe-svg-r");
 
@@ -645,16 +676,12 @@ function resizeGlobe1(selection, pathFunc, projectionFunc, idNameSphere, classNa
     updateEarthquakes();
     updateStations();
 }
-// ----------------------------------------------------------------------------
 
-// ==========================
-// PAGE 4: GLOBE 2 + Country SEARCH (patched)
-// ==========================
+
 const svg2 = d3.select("#globe-svg-2");
 const path2 = d3.geoPath();
 const projection2 = d3.geoOrthographic().clipAngle(90);
 
-// Globe sphere (ensure it's drawn first)
 svg2.append("path")
   .datum({ type: "Sphere" })
   .attr("class", "globe-sphere2")
@@ -670,12 +697,8 @@ const countryMapSvg = d3.select("#country-map");
 let countriesData = [];
 let selectedCountry = null; // will hold the selected feature
 
-// Default fill for countries
 const DEFAULT_FILL = "#222222";
 const HIGHLIGHT_FILL = "#4eabe1ff";
-
-// --- station-on-globe setup (new) ---
-// group for station symbols on globe (create once)
 const globeStationsGroup = svg2.append("g").attr("class", "globe-stations");
 const triSymbol = d3.symbol().type(d3.symbolTriangle).size(90);
 
@@ -696,7 +719,6 @@ d3.json("https://unpkg.com/world-atlas@2/countries-110m.json").then(worldData =>
   resizeGlobe2();
 }).catch(err => {
   console.error("Failed to load world data:", err);
-  d3.select("#country-result").text("Error loading world geometry.");
 });
 
 function resizeGlobe2() {
@@ -711,7 +733,6 @@ function resizeGlobe2() {
   svg2.selectAll(".country2")
     .attr("fill", d => (selectedCountry && sameFeature(d, selectedCountry)) ? HIGHLIGHT_FILL : DEFAULT_FILL);
 
-  // update globe stations positions/visibility (if a country is selected)
   plotStationsOnGlobe(selectedCountry);
 }
 window.addEventListener("resize", resizeGlobe2);
@@ -723,13 +744,10 @@ function sameFeature(a, b) {
   return a === b;
 }
 
-// Smoothly rotate globe to target [lon, lat]
 function rotateToLonLat(lon, lat, duration = 1000) {
-  // current rotate is [lambda, phi, gamma]
   const currentRotate = projection2.rotate();
   const targetRotate = [-lon, -lat, 0];
 
-  // Use d3.interpolate for arrays
   d3.transition()
     .duration(duration)
     .tween("rotate", function() {
@@ -745,9 +763,6 @@ function rotateToLonLat(lon, lat, duration = 1000) {
     });
 }
 
-// ---------------------------
-// drawCountryMap (always draws country + stations for that country)
-// ---------------------------
 function drawCountryMap(feature) {
   countryMapSvg.selectAll("*").remove();
   if (!feature) return;
@@ -844,9 +859,6 @@ function drawCountryMap(feature) {
     });
 }
 
-// ---------------------------
-// Plot stations on the globe (shows only stations inside optional feature)
-// ---------------------------
 function plotStationsOnGlobe(feature = null) {
   if (!stationData) return;
 
@@ -854,14 +866,11 @@ function plotStationsOnGlobe(feature = null) {
     ? stationData.filter(d => d3.geoContains(feature, [d.longitude, d.latitude]))
     : [];
 
-  // Data join with stable key (station code or coords)
   const sel = globeStationsGroup.selectAll(".globe-station")
     .data(stationsToShow, d => d["station code"] || `${d.longitude},${d.latitude}`);
 
-  // EXIT
   sel.exit().remove();
 
-  // ENTER
   const enter = sel.enter()
     .append("path")
     .attr("class", "globe-station")
@@ -914,9 +923,6 @@ function plotStationsOnGlobe(feature = null) {
     });
 }
 
-// ---------------------------
-// Country search handling
-// ---------------------------
 function handleCountrySearch(query) {
   if (!countriesData || !countriesData.length) {
     d3.select("#country-result").text("World geometry not yet loaded. Try again in a moment.");
@@ -974,10 +980,7 @@ function handleCountrySearch(query) {
   // draw the zoomed country map (with stations)
   drawCountryMap(countryFeature);
 
-  // show stations on the globe for this selected country
   plotStationsOnGlobe(selectedCountry);
-
-  // update the country-result text with station count
   const stationsInCountry = stationData ? stationData.filter(d =>
     d3.geoContains(countryFeature, [d.longitude, d.latitude])
   ) : [];
@@ -1002,6 +1005,53 @@ if (btn && inputEl) {
   });
 }
 
+let activeLayer = "stations"; // default: stations
+const toggleButtons = document.querySelectorAll(".toggle-btn");
 
+toggleButtons.forEach(btn => {
+  btn.addEventListener("click", () => {
+    // Update active layer
+    activeLayer = btn.dataset.type;
+
+    // Update button styles
+    toggleButtons.forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+
+    // Update globe rendering
+    updateGlobePoints();
+  });
+});
+const svgGlobe = d3.select("#globe-svg");
+const projection = d3.geoOrthographic().clipAngle(90);
+const path = d3.geoPath().projection(projection);
+
+// Groups for points
+const stationsGroup = svgGlobe.append("g").attr("class", "stations");
+const earthquakesGroup = svgGlobe.append("g").attr("class", "earthquakes");
+
+function updateGlobePoints() {
+  // Show or hide earthquakes
+  earthquakesGroup.selectAll("circle")
+    .attr("opacity", d => (activeLayer === "earthquakes" || activeLayer === "both") && isPointVisible(d.longitude, d.latitude, rotate1) ? 0.8 : 0);
+
+  // Show or hide stations
+  stationsGroup.selectAll("path")
+    .attr("opacity", d => (activeLayer === "stations" || activeLayer === "both") && isPointVisible(d.longitude, d.latitude, rotate1) ? 0.95 : 0);
+}
+
+
+// ==========================
+// PAGE 6
+// ==========================
+
+document.addEventListener("DOMContentLoaded", () => {
+  const flipCards = document.querySelectorAll(".flip-card");
+
+  flipCards.forEach(card => {
+    card.addEventListener("click", () => {
+      card.querySelector(".flip-card-inner").classList.toggle("flipped");
+    });
+  });
+});
 
 
