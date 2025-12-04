@@ -256,9 +256,11 @@ section, .hero {
 }
 .story-column {
   flex: 1 1 40%;
+  margin-left: 0.5rem;
 }
 .map-column {
   flex: 1 1 55%;
+  margin-left: 2rem;
   color:rgb(199, 199, 199)
 }
 

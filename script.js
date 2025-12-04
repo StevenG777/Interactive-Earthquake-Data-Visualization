@@ -329,8 +329,8 @@ featureBoxes.forEach(box => {
   });
 
   box.addEventListener("mouseleave", () => {
-    gifEl.style.display = "none";
-    gifEl.src = "";
+    gifEl.style.display = "gifs/default.gif";
+    gifEl.src = "gifs/default.gif";
   });
 });
 
