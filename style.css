@@ -83,7 +83,7 @@ section, .hero {
   top:0; left:0;
   width:100%;
   height:100%;
-  background: linear-gradient(to bottom, #504f4f, #272626);
+  background: linear-gradient(to bottom, #acabab, #272626);
   animation: pulse 8s infinite alternate;
   z-index:0;
 }
@@ -195,12 +195,12 @@ section, .hero {
 #map-section {
   background: linear-gradient(to bottom, #1e1e1e, #131212);
   width: 100%;
-  min-height: 100vh;
+  min-height: 120vh;
   display: flex;
-  flex-direction: row;       /* globe(s) + story side-by-side on desktop */
-  align-items: stretch;
+  flex-direction: row;
+  align-items: flex-start;
   gap: 1rem;
-  padding: 1rem;
+  padding: 2rem;
   box-sizing: border-box;
 }
 
@@ -227,7 +227,7 @@ section, .hero {
   display: grid;
   gap: 12px;
   grid-template-columns: repeat(2, 1fr);
-  grid-auto-rows: 200px;
+  grid-auto-rows: 220px;
   align-items: stretch;
 }
 
@@ -249,15 +249,11 @@ section, .hero {
 .feature-box p { margin: 0; font-size: 0.95rem; line-height: 1.28; color: #cdcdcd; }
 .feature-box:hover { transform: translateY(-6px); box-shadow: 0 12px 30px rgba(0,0,0,0.18); }
 
-#map-section {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 2rem;
-}
 .story-column {
   flex: 1 1 40%;
   margin-left: 0.5rem;
 }
+
 .map-column {
   flex: 1 1 55%;
   margin-left: 2rem;
@@ -267,6 +263,97 @@ section, .hero {
 /* ========================== */
 /* PAGE 4 (Country detail) - Globe sizing & layout fixes */
 /* ========================== */
+
+
+.globe-toggle-boxes {
+  position: absolute;
+  top: -3rem;                
+  left: 50%;
+  transform: translateX(-50%); 
+  display: flex;
+  gap: 1rem;
+  z-index: 50;
+  pointer-events: auto;
+}
+
+/* Base card */
+.globe-toggle-box {
+  padding: 10px 18px;
+  width: 120px;          /* <-- longer width */
+  height: 40px;          /* <-- shorter height */
+  border-radius: 10px;
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease;
+  color: #ffffff;
+  font-weight: 300;
+}
+
+/* Small subtext */
+.globe-toggle-box p {
+  margin: 0;
+  font-size: 0.72rem;
+  opacity: 0.85;
+}
+
+#box-stations {
+  background: rgba(66, 135, 245, 0.18);         /* blue tint */
+  border: 1px solid rgba(66, 135, 245, 0.35);
+}
+
+#box-stations.active {
+  background: rgb(52, 111, 207);
+  box-shadow: 0 0 12px rgba(66, 135, 245, 0.45);
+  transform: translateY(-3px);
+}
+
+#box-magnitudes {
+  background: rgba(255, 93, 93, 0.18);          /* red tint */
+  border: 1px solid rgba(255, 93, 93, 0.35);
+}
+
+#box-magnitudes.active {
+  background: rgb(182, 52, 52);
+  box-shadow: 0 0 12px rgba(255, 93, 93, 0.45);
+  transform: translateY(-3px);
+}
+
+/* Keyboard focus */
+.globe-toggle-box:focus {
+  outline: 2px solid rgba(255,255,255,0.25);
+  outline-offset: 2px;
+}
+
+/* Dim inactive globe container */
+.globe-dim {
+  opacity: 0.18 !important;
+  filter: grayscale(0.2);
+  pointer-events: none;
+  transition: opacity 220ms ease;
+}
+
+/* Responsive stacking for mobile */
+@media (max-width: 680px) {
+  .globe-toggle-boxes {
+    flex-direction: column;
+    left: 0.5rem;
+    top: 0.5rem;
+  }
+  .globe-toggle-box {
+    width: 150px;
+    height: 50px;
+  }
+}
+
+
+/* make sure globes' parent containers are position:relative so toggle panel positions properly */
+.globe-column {
+  margin-top: 60px;
+}
+
 .globe-instruction {
   font-size: 0.85rem;
   color: rgb(199, 199, 199);

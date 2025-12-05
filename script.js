@@ -329,8 +329,8 @@ featureBoxes.forEach(box => {
   });
 
   box.addEventListener("mouseleave", () => {
-    gifEl.style.display = "gifs/default.gif";
-    gifEl.src = "gifs/default.gif";
+    gifEl.style.display = "gifs/evolution2.gif";
+    gifEl.src = "gifs/evolution2.gif";
   });
 });
 
@@ -676,7 +676,6 @@ function resizeGlobe1(selection, pathFunc, projectionFunc, idNameSphere, classNa
     updateEarthquakes();
     updateStations();
 }
-
 
 const svg2 = d3.select("#globe-svg-2");
 const path2 = d3.geoPath();
@@ -1030,14 +1029,79 @@ const stationsGroup = svgGlobe.append("g").attr("class", "stations");
 const earthquakesGroup = svgGlobe.append("g").attr("class", "earthquakes");
 
 function updateGlobePoints() {
-  // Show or hide earthquakes
+
   earthquakesGroup.selectAll("circle")
     .attr("opacity", d => (activeLayer === "earthquakes" || activeLayer === "both") && isPointVisible(d.longitude, d.latitude, rotate1) ? 0.8 : 0);
 
-  // Show or hide stations
   stationsGroup.selectAll("path")
     .attr("opacity", d => (activeLayer === "stations" || activeLayer === "both") && isPointVisible(d.longitude, d.latitude, rotate1) ? 0.95 : 0);
 }
+
+// Toggle logic for two separate boxes (Stations / Magnitudes)
+// Ensure this runs after DOM + globe initialization
+(function() {
+  const boxStations = document.getElementById("box-stations");
+  const boxMagnitudes = document.getElementById("box-magnitudes");
+  if (!boxStations || !boxMagnitudes) return;
+
+  // The DOM containers that hold the two globes (adjust these selectors if your markup differs)
+  const topGlobeContainer = document.querySelector(".globe-container.globe-top");          // stations (svg1R)
+  const bottomGlobeContainer = document.querySelector(".globe-container.globe-bottom-wrapper"); // magnitudes (svg1)
+
+  // Keep a global-ish activeLayer variable consistent with your other code
+  window.activeLayer = window.activeLayer || "stations";
+
+  function applyActiveBox(mode) {
+    // UI states
+    boxStations.classList.toggle("active", mode === "stations");
+    boxMagnitudes.classList.toggle("active", mode === "earthquakes");
+
+    boxStations.setAttribute("aria-pressed", mode === "stations");
+    boxMagnitudes.setAttribute("aria-pressed", mode === "earthquakes");
+
+    // dim opposite globe container
+    if (topGlobeContainer && bottomGlobeContainer) {
+      if (mode === "stations") {
+        topGlobeContainer.classList.remove("globe-dim");
+        bottomGlobeContainer.classList.add("globe-dim");
+      } else if (mode === "earthquakes") {
+        bottomGlobeContainer.classList.remove("globe-dim");
+        topGlobeContainer.classList.add("globe-dim");
+      }
+    }
+
+    // update active layer and visuals
+    window.activeLayer = mode;
+
+    if (typeof updateGlobePoints === "function") updateGlobePoints();
+    // ensure globe-station plotting updates for selected country
+    if (mode === "stations" && typeof plotStationsOnGlobe === "function") {
+      plotStationsOnGlobe(selectedCountry || null);
+    }
+    // ensure earthquake circles update
+    if ((mode === "earthquakes" || mode === "both") && typeof updateEarthquakes === "function") {
+      updateEarthquakes();
+    }
+  }
+
+  // mouse click handlers
+  boxStations.addEventListener("click", () => applyActiveBox("stations"));
+  boxMagnitudes.addEventListener("click", () => applyActiveBox("earthquakes"));
+
+  // keyboard support (Enter / Space)
+  [boxStations, boxMagnitudes].forEach(box => {
+    box.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        box.click();
+      }
+    });
+  });
+
+  // set initial state (mirrors existing default)
+  applyActiveBox(window.activeLayer || "stations");
+})();
+
 
 
 // ==========================

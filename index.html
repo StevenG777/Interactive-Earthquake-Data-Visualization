@@ -72,15 +72,14 @@
 <section id="map-section" class="full-page">
 
   <div class="map-column">
-    <h2>Global Visualizations</h2>
-    <p class="feature-instruction">Hover over each feature to display.</p>
+    <p class="feature-instruction">Hover over each feature box to display.</p>
 
     <div id="map-wrapper" style="position: relative; width: 90%; height: 500px;">
       <!-- SVG -->
       <svg id="plate-map" width="100%" height="100%"></svg>
 
       <!-- Default / Feature GIF overlay -->
-      <img id="feature-gif" src="gifs/default.gif" alt="Feature GIF" style="
+      <img id="feature-gif" src="gifs/evolution2.gif" alt="Feature GIF" style="
         position: absolute;
         top: 0;
         left: 0;
@@ -105,38 +104,54 @@
         the primary mechanisms that generate seismicity.
       </p>
 
-      <p class="feature-instruction">Scroll inside each box for more details.</p>
+      <p class="feature-instruction">Scroll inside each feature box for more details.</p>
 
       <div class="feature-boxes" aria-live="polite">
 
         <div class="feature-box">
           <h3>Plate Tectonics</h3>
-          <p>Divergence, convergence, and transforming of lithospheric tectonic plates accumulates stress at plate boundaries.</p>
+          <p>
+            Divergence, convergence, and transforming of lithospheric tectonic plates accumulates stress at 
+            plate boundaries. These either cumulate to seismic events or are periodically released abruptly as earthquakes.
+          </p>
         </div>
 
         <div class="feature-box">
           <h3>Faults</h3>
-          <p>Planar fractures in the crust where accumulated stress exceeds rock strength and stress thresholds.</p>
+          <p>
+            Planar fractures in the crust where accumulated stress exceed rock strength and stress thresholds. 
+            Elastic energy manifests as an earthquake.</p>
         </div>
 
         <div class="feature-box">
           <h3>Volcanic Activity</h3>
-          <p>Magma movement and fluid pressure changes near volcanoes fracture surrounding rock and can trigger earthquakes.</p>
+          <p>
+            Magma movement and fluid pressure changes near volcanoes fracture surrounding rock and can 
+            trigger earthquakes that often precede eruptions.</p>
         </div>
 
         <div class="feature-box">
           <h3>Seismic Waves</h3>
-          <p>Elastic waves including P-waves and S-waves transmit distinct propagation velocities that influence intensity at surface levels.</p>
+          <p>
+            Elastic waves including P-waves (primary compressional waves) and S-waves (secondary-shear waves) 
+            transmit distinct propagation velocities that interact with Earth's heterogeneous materials. 
+            These influence the experienced intensity at surface levels.</p>
         </div>
 
         <div class="feature-box">
           <h3>Human-Induced Seismicity</h3>
-          <p>Certain human activities can perturb stress conditions and reactivate nearby faults.</p>
+          <p>
+            Certain human activities can perturb stress conditions and reactivate nearby faults.
+          </p>
         </div>
 
         <div class="feature-box">
           <h3>Crustal Adjustments</h3>
-          <p>Long-term changes like post-glacial rebound or sediment loading gradually deform the lithosphere and may trigger low-to-moderate earthquakes.</p>
+          <p>
+            Long-term changes such as post-glacial rebound, sediment loading, or large-scale erosion 
+            can cause the lithosphere to gradually deform, re-stablishing gravitational and isostatic 
+            equilibrium. Such slow readjustments modify the crust's stress fields and may be released 
+            as low-to-moderate magnitude earthquakes.</p>
         </div>
 
       </div>
@@ -148,19 +163,31 @@
 <!-- Page 4 Globes + Country Search -->
 
 <section id="country-detail-section">
-
   <div class="globe-column">
-          <p class="globe-instruction">Hover over globes for more details. Drag to rotate.</p>
+
+
+    <!-- Put these two boxes where you want them to appear (inside .globe-column) -->
+  <div class="globe-toggle-boxes">
+    <div id="box-stations" class="globe-toggle-box active" data-mode="stations" role="button" tabindex="0" aria-pressed="true">
+      <h4>Stations</h4>
+    </div>
+
+    <div id="box-magnitudes" class="globe-toggle-box" data-mode="earthquakes" role="button" tabindex="0" aria-pressed="false">
+      <h4>Magnitudes</h4>
+    </div>
+  </div>
+
+
 
     <!-- Top globe -->
     <div class="globe-container">
-      <div class="globe-title1">Seismic Network</div>
+      <div class="globe-title1">Seismic Network Stations</div>
       <svg id="globe-svg-r"></svg>
     </div>
 
     <!-- Bottom globe -->
     <div class="globe-container">
-      <div class="globe-title2">Earthquake Magnitude</div>
+      <div class="globe-title2">Earthquake Magnitudes</div>
       <div class="legend-container">
         <div class="legend-title">Magnitude</div>
         <div class="legend-bar"></div>
@@ -175,7 +202,7 @@
   </div>
 
   <div class="country-info">
-    <h2 id="country-name">Search for a country's seismic network station.</h2>
+    <h2 id="country-name">Search for a country's data.</h2>
     <div class="country-search">
       <input type="text" id="country-input" placeholder="Enter a country name...">
       <button id="country-search-btn">Search</button>
