@@ -50,7 +50,7 @@ const stationData = (await loadCSV('stations.csv'))
         d.longitude != null && !isNaN(d.longitude) &&
         d.name != null
     )
-console.log("Seismis Station Data")
+console.log("Seismic Station Data")
 console.log(stationData)
 
 // Call the JSON loader function (Function Caller)
@@ -341,12 +341,14 @@ featureBoxes.forEach(box => {
 // ==========================
 // PAGE 4
 // ==========================
+// VARIABLE INITIALIZATION ----------------------------------------------------
 const svg1 = d3.select("#globe-svg");
 const svg1R = d3.select("#globe-svg-r");
 
 // Define path generator: GeoJSON Data [longtitude, latitude in degree] --> SVG String Path [x, y in pixel]
 const path1 = d3.geoPath();
 const path1R = d3.geoPath();
+
 // Define projection callback: 
     // Azimuthal Projection:    Sphere --> Plane
     // Conic Projection:        Sphere --> Cone --> Plane
@@ -357,7 +359,6 @@ const path1R = d3.geoPath();
         // 2. projection(orthographicRaw()) --> Wrapped by project() to access useful member function and share interface with other projection funcs
             // LINK: https://github.com/d3/d3-geo/blob/main/src/projection/index.js
         // 3. projection(orthographicRaw()).clipAngle(Radian) --> Clip to the visible hemisphere
-
 const projection1 = d3.geoOrthographic().clipAngle(90);
 const projection1R = d3.geoOrthographic().clipAngle(90);
 
@@ -400,7 +401,6 @@ const drag_behavior = d3.drag()
         // projection(orthographicRaw()).rotate([λ, φ])
         projection1.rotate(rotate1);
         projection1R.rotate(rotate1);
-        projection2.rotate(rotate1);
         
         // Re-render the SVG <path>
         // It DOES NOT re-render <circle>
@@ -408,8 +408,6 @@ const drag_behavior = d3.drag()
         svg1.selectAll(".country1").attr("d", path1);
         svg1R.select("path#globe-sphere1R").attr("d", path1R);
         svg1R.selectAll(".country1R").attr("d", path1R);
-        svg2.select("path#globe-sphere2").attr("d", path2);
-        svg2.selectAll(".country2").attr("d", path2);
 
         // Re-render the SVG <circle> with the correct X,Y coordinates
         // It DOES NOT re-render other SVG elements: <path>, <line>, <text>, whatever
@@ -420,6 +418,7 @@ const drag_behavior = d3.drag()
         lastX1 = event.x;
         lastY1 = event.y;
     })
+
 
 plotBaseSphere(svg1, sphereData, 'globe-sphere1')
 svg1.call(drag_behavior)          // <-- fix here
@@ -433,8 +432,10 @@ svg1R.call(drag_behavior)         // <-- fix here
 plotCountriesRegions(svg1R, countryData, 'country1R')
 plotStationsPoints(svg1R, stationData)
 resizeGlobe1(svg1R, path1R, projection1R, 'globe-sphere1R', 'country1R');
+// ----------------------------------------------------------------------------
 
-
+// FUNCTION DEFINITION --------------------------------------------------------
+// Function to plot empty dark with white outline globe (Func Definer)
 function plotBaseSphere(selection, data, idName) {
     selection.append("path")
         // Input Sphere data
@@ -447,6 +448,7 @@ function plotBaseSphere(selection, data, idName) {
         .attr("stroke-width", 0.5);
 }
 
+// Function to plot country to globe & Handle TOOLTIP HOVER INTERACTIONS (Func Definer)
 function plotCountriesRegions(selection, data, className) {
     const countryGeoNameData = topojson.feature(data, data.objects.countries).features;
     const countriesGroup1 = selection.append("g")
@@ -552,6 +554,7 @@ function plotEarthquakesPoints(selection, data) {
 });
 }
 
+// Function to plot seismic stations to globe & Handle TOOLTIP HOVER INTERACTIONS (Func Definer)
 function plotStationsPoints(selection, data) {
     const tri = d3.symbol().type(d3.symbolTriangle).size(90);
 
@@ -623,6 +626,7 @@ function updateEarthquakes() {
         );
 }
 
+// Function to update stations on rotation or resize (Func Definer)
 function updateStations() {
     svg1R.selectAll(".stations .station")
         .attr("transform", d => {
@@ -632,6 +636,7 @@ function updateStations() {
         .attr("opacity", d => isPointVisible(d.longitude, d.latitude, rotate1) ? 0.95 : 0);
 }
 
+// Function determine how a point should be hidden (Func Definer)
 function isPointVisible(lon, lat, rotate) {
     const λ = lon * Math.PI/180;
     const φ = lat * Math.PI/180;
@@ -645,6 +650,7 @@ function isPointVisible(lon, lat, rotate) {
     return cosc > 0;
 }
 
+// Function create the legend for globe with earthquake spots (Func Definer)
 function createGradientLegend(data) {
   if (!data || data.length === 0) return;
 
@@ -679,6 +685,7 @@ function resizeGlobe1(selection, pathFunc, projectionFunc, idNameSphere, classNa
     updateEarthquakes();
     updateStations();
 }
+// ----------------------------------------------------------------------------
 
 /* Country */
 const svg2 = d3.select("#globe-svg-2");
@@ -712,10 +719,23 @@ d3.json("https://unpkg.com/world-atlas@2/countries-110m.json").then(worldData =>
     .attr("stroke-width", 0.5)
     .attr("d", path2);
 
-  resizeGlobe2();
+  resizeGlobe1(svg2, path2, projection2,'globe-sphere2', 'country2');
 }).catch(err => {
   console.error("Failed to load world data:", err);
 });
+
+// countriesFeatureData = topojson.feature(countriesData, worldData.objects.countries).features;
+// countriesGroup2.selectAll(".country2")
+//     .data(countriesFeatureData)
+//     .enter()
+//     .append("path")
+//     .attr("class", "country2")
+//     .attr("fill", DEFAULT_FILL)
+//     .attr("stroke", "#fff")
+//     .attr("stroke-width", 0.5)
+//     .attr("d", path2);
+// resizeGlobe1(svg2, path2, projection2,'globe-sphere2', 'country2');
+
 
 function sameFeature(a, b) {
   if (!a || !b) return false;
