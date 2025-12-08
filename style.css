@@ -64,7 +64,7 @@ section, .hero {
 }
 
 /* ========================== */
-/* PAGE 1 (Hero) */
+/* PAGE 1 (Introduction) */
 /* ========================== */
 .hero {
   position: relative;
@@ -134,13 +134,70 @@ section, .hero {
 }
 
 /* ========================== */
-/* PAGE 2 (Earth layers) */
+/* PAGE 2 (Anecdotes) */
+/* ========================== */
+
+/* Make anecdote visually identical to hero */
+.anecdote {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  text-align: center;
+  color: #fff;
+  padding: 3rem 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  z-index: 1;
+}
+
+.anecdote1 {
+  position: absolute;
+  top:0; left:0;
+  width:100%;
+  height:100%;
+  background: linear-gradient(to bottom, #272626, #1a1a1a);
+  animation: pulse 8s infinite alternate;
+}
+
+/* typography and sizing same as hero */
+.anecdote h1 {
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  max-width: 900px;
+  margin-bottom: 1rem;
+  line-height: 1.05;
+  text-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+  z-index: 1;
+}
+
+.anecdote p {
+  font-size: clamp(1rem, 1.8vw, 1.2rem);
+  max-width: 800px;
+  line-height: 1.8;
+  opacity: 0.9;
+  margin: 1rem 0;
+}
+
+.anecdote .author {
+  align-self: flex-end;   /* pushes it to the right inside the flex container */
+  text-align: right;
+  width: 100%;            /* ensures the text-align works */
+  max-width: 800px;       /* match the width of your other paragraphs */
+  padding-right: 1rem;    /* optional: small right padding */
+}
+
+
+/* ========================== */
+/* PAGE 3 (Earth layers) */
 /* ========================== */
 #earth-structure-section {
-    background: linear-gradient(to bottom, #272626, #1e1e1e);
+    background: linear-gradient(to bottom, #1a1a1a, #1e1e1e);
     color: #fff;
     position: relative;
-    padding: 2rem;
+    padding: 1rem;
 }
 
 #earth-structure-section {
@@ -157,7 +214,6 @@ section, .hero {
     text-align: center;
 }
 
-/* image + hotspot wrapper */
 .image-hotspot-wrap {
     position: relative;
     width: 90%;
@@ -201,7 +257,7 @@ section, .hero {
 }
 
 /* ========================== */
-/* PAGE 3 (Map / Story) */
+/* PAGE 4 (Why Earthquakes Occur) */
 /* ========================== */
 
 #map-section {
@@ -237,7 +293,7 @@ section, .hero {
 
 .feature-boxes {
   display: grid;
-  gap: 12px;
+  gap: 10px;
   grid-template-columns: repeat(2, 1fr);
   grid-auto-rows: 220px;
   align-items: stretch;
@@ -247,13 +303,13 @@ section, .hero {
   background: #26262e;
   color: #ffffff;
   border-radius: 10px;
-  padding: 15px;
+  padding: 10px;
   transition: transform 0.18s ease, box-shadow 0.18s ease;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.2rem;
   width: 100%;
-  height: 100%;
+  height: 95%;
   overflow: auto;
 }
 
@@ -263,20 +319,20 @@ section, .hero {
 
 .story-column {
   flex: 1 1 40%;
-  margin-left: 0.5rem;
+  margin-left: 0.1rem;
+  right: 15rem;
 }
 
 .map-column {
   flex: 1 1 55%;
   margin-left: 2rem;
-  color:rgb(199, 199, 199)
+  color:rgb(199, 199, 199);
+  width: 90%;
 }
 
 /* ========================== */
-/* PAGE 4 (Country detail) - Globe sizing & layout fixes */
+/* PAGE 5 (2 Globes + Zoomed Country) */
 /* ========================== */
-
-
 .globe-toggle-boxes {
   position: absolute;
   top: -3rem;                
@@ -292,7 +348,7 @@ section, .hero {
 .globe-toggle-box {
   padding: 10px 18px;
   width: 120px;          /* <-- longer width */
-  height: 40px;          /* <-- shorter height */
+  height: 20px;          /* <-- shorter height */
   border-radius: 10px;
   cursor: pointer;
   user-select: none;
@@ -304,7 +360,6 @@ section, .hero {
   font-weight: 300;
 }
 
-/* Small subtext */
 .globe-toggle-box p {
   margin: 0;
   font-size: 0.72rem;
@@ -333,7 +388,6 @@ section, .hero {
   transform: translateY(-3px);
 }
 
-/* Keyboard focus */
 .globe-toggle-box:focus {
   outline: 2px solid rgba(255,255,255,0.25);
   outline-offset: 2px;
@@ -359,7 +413,6 @@ section, .hero {
     height: 50px;
   }
 }
-
 
 /* make sure globes' parent containers are position:relative so toggle panel positions properly */
 .globe-column {
@@ -582,7 +635,7 @@ section, .hero {
 #country-detail-section .country-info { padding-left: 1rem; }
 
 /* ========================== */
-/* PAGE 5 (Heatmap) */
+/* PAGE 6 (Heatmap) */
 /* ========================== */
 #heatmap-section {
   min-height: 100vh;
@@ -591,7 +644,7 @@ section, .hero {
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  background: linear-gradient(to bottom, #131212, #030405);
+  background: linear-gradient(to bottom, #0f0d0d, #030405);
   color: #fff;
   padding: 1rem;
   box-sizing: border-box;
@@ -657,7 +710,7 @@ section, .hero {
 }
 
 /* ========================== */
-/* PAGE 6 (News & Stories) */
+/* PAGE 7 (News & Stories) */
 /* ========================== */
 #news-section {
   min-height: 100vh;
