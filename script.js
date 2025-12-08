@@ -68,6 +68,7 @@ console.log(sphereData)
 // GLOBAL TOOLTIP
 // ==========================
 const tooltip = d3.select("#globe-tooltip");
+
 // ==========================
 // DOT FOR PAGES
 // ==========================
@@ -422,14 +423,14 @@ const drag_behavior = d3.drag()
 
 plotBaseSphere(svg1, sphereData, 'globe-sphere1')
 svg1.call(drag_behavior)          // <-- fix here
-plotCountriesRegions(svg1, countryData, 'country1')
+plotCountriesRegions(svg1, countryData, 'country1', '#E31F07')
 plotEarthquakesPoints(svg1, earthquakeData)
 createGradientLegend(earthquakeData)
 resizeGlobe1(svg1, path1, projection1, 'globe-sphere1', 'country1');
 
 plotBaseSphere(svg1R, sphereData, 'globe-sphere1R')
 svg1R.call(drag_behavior)         // <-- fix here
-plotCountriesRegions(svg1R, countryData, 'country1R')
+plotCountriesRegions(svg1R, countryData, 'country1R', '#2156e9')
 plotStationsPoints(svg1R, stationData)
 resizeGlobe1(svg1R, path1R, projection1R, 'globe-sphere1R', 'country1R');
 // ----------------------------------------------------------------------------
@@ -449,39 +450,31 @@ function plotBaseSphere(selection, data, idName) {
 }
 
 // Function to plot country to globe & Handle TOOLTIP HOVER INTERACTIONS (Func Definer)
-function plotCountriesRegions(selection, data, className) {
-    const countryGeoNameData = topojson.feature(data, data.objects.countries).features;
-    const countriesGroup1 = selection.append("g")
-        .attr("class", "countries");
+function plotCountriesRegions(selection, data, className, highlightColor = "#2156e9ff") {
+  const countryGeoNameData = topojson.feature(data, data.objects.countries).features;
 
-    countriesGroup1.selectAll(`.${className}`)
-        .data(countryGeoNameData)
-        .enter()
-        .append("path")
-        .attr("class", className)
-        .attr("fill", "#222222")
-        .attr("stroke", "#fff")
-        .attr("stroke-width", 0.5)
+  const countriesGroup = selection.append("g")
+    .attr("class", "countries");
 
-       
-        .on("mouseover", function(event, d) {
-            
-            d3.select(this)
-                .attr("fill", "#2156e9ff");
-            
-            tooltip.text(d.properties.name)
-                .style("display","block")
-                .style("left", (event.pageX + 10) + "px")
-                .style("top",  (event.pageY + 10) + "px");
-        })
-        
-        .on("mouseout", function() {
-            
-            d3.select(this)
-                .attr("fill", "#222222");
-            // Hide tooltip info
-            tooltip.style("display","none");
-        });
+  countriesGroup.selectAll(`.${className}`)
+    .data(countryGeoNameData)
+    .enter()
+    .append("path")
+    .attr("class", className)
+    .attr("fill", "#222222")
+    .attr("stroke", "#fff")
+    .attr("stroke-width", 0.5)
+    .on("mouseover", function(event, d) {
+      d3.select(this).attr("fill", highlightColor);
+      tooltip.text(d.properties.name)
+        .style("display","block")
+        .style("left", (event.pageX + 10) + "px")
+        .style("top", (event.pageY + 10) + "px");
+    })
+    .on("mouseout", function() {
+      d3.select(this).attr("fill", "#222222");
+      tooltip.style("display","none");
+    });
 }
 
 // Function to plot earthquake spot to globe & Handle TOOLTIP HOVER INTERACTIONS (Func Definer)
@@ -690,6 +683,7 @@ function resizeGlobe1(selection, pathFunc, projectionFunc, idNameSphere, classNa
 /* Country */
 const svg2 = d3.select("#globe-svg-2");
 const path2 = d3.geoPath();
+
 const projection2 = d3.geoOrthographic().clipAngle(90);
 
 // Countries group
@@ -1022,6 +1016,7 @@ toggleButtons.forEach(btn => {
     updateGlobePoints();
   });
 });
+
 const svgGlobe = d3.select("#globe-svg");
 const projection = d3.geoOrthographic().clipAngle(90);
 const path = d3.geoPath().projection(projection);
@@ -1047,9 +1042,13 @@ function updateGlobePoints() {
   if (!boxStations || !boxMagnitudes) return;
 
   // The DOM containers that hold the two globes (adjust these selectors if your markup differs)
-  const topGlobeContainer = document.querySelector(".globe-container.globe-top");          // stations (svg1R)
-  const bottomGlobeContainer = document.querySelector(".globe-container.globe-bottom-wrapper"); // magnitudes (svg1)
+  const globeContainers = Array.from(document.querySelectorAll("#country-detail-section .globe-column .globe-container"));
+  const topGlobeContainer = globeContainers[0] || null;
+  const bottomGlobeContainer = globeContainers[1] || null;
 
+  if (!topGlobeContainer || !bottomGlobeContainer) {
+    console.warn("Globe containers not found. Found:", globeContainers);
+  }
   // Keep a global-ish activeLayer variable consistent with your other code
   window.activeLayer = window.activeLayer || "stations";
 
@@ -1057,11 +1056,10 @@ function updateGlobePoints() {
     // UI states
     boxStations.classList.toggle("active", mode === "stations");
     boxMagnitudes.classList.toggle("active", mode === "earthquakes");
-
     boxStations.setAttribute("aria-pressed", mode === "stations");
     boxMagnitudes.setAttribute("aria-pressed", mode === "earthquakes");
 
-    // dim opposite globe container
+    // dim opposite globe container (if found)
     if (topGlobeContainer && bottomGlobeContainer) {
       if (mode === "stations") {
         topGlobeContainer.classList.remove("globe-dim");
@@ -1070,21 +1068,27 @@ function updateGlobePoints() {
         bottomGlobeContainer.classList.remove("globe-dim");
         topGlobeContainer.classList.add("globe-dim");
       }
+    } else {
+      // fallback: try to dim by selecting globe svg parents (more aggressive)
+      const fallbackTop = document.querySelector("#globe-svg-r")?.closest(".globe-container");
+      const fallbackBottom = document.querySelector("#globe-svg")?.closest(".globe-container");
+      if (fallbackTop && fallbackBottom) {
+        if (mode === "stations") {
+          fallbackTop.classList.remove("globe-dim");
+          fallbackBottom.classList.add("globe-dim");
+        } else {
+          fallbackBottom.classList.remove("globe-dim");
+          fallbackTop.classList.add("globe-dim");
+        }
+      }
     }
 
     // update active layer and visuals
     window.activeLayer = mode;
-
     if (typeof updateGlobePoints === "function") updateGlobePoints();
-    // ensure globe-station plotting updates for selected country
-    if (mode === "stations" && typeof plotStationsOnGlobe === "function") {
-      plotStationsOnGlobe(selectedCountry || null);
-    }
-    // ensure earthquake circles update
-    if ((mode === "earthquakes" || mode === "both") && typeof updateEarthquakes === "function") {
-      updateEarthquakes();
-    }
-  }
+    if (mode === "stations" && typeof plotStationsOnGlobe === "function") plotStationsOnGlobe(selectedCountry || null);
+    if ((mode === "earthquakes" || mode === "both") && typeof updateEarthquakes === "function") updateEarthquakes();
+  } 
 
   // mouse click handlers
   boxStations.addEventListener("click", () => applyActiveBox("stations"));

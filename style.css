@@ -333,105 +333,16 @@ section, .hero {
 /* ========================== */
 /* PAGE 5 (2 Globes + Zoomed Country) */
 /* ========================== */
-.globe-toggle-boxes {
-  position: absolute;
-  top: -3rem;                
-  left: 50%;
-  transform: translateX(-50%); 
-  display: flex;
-  gap: 1rem;
-  z-index: 50;
-  pointer-events: auto;
-}
-
-/* Base card */
-.globe-toggle-box {
-  padding: 10px 18px;
-  width: 120px;          /* <-- longer width */
-  height: 20px;          /* <-- shorter height */
-  border-radius: 10px;
-  cursor: pointer;
-  user-select: none;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease;
-  color: #ffffff;
-  font-weight: 300;
-}
-
-.globe-toggle-box p {
-  margin: 0;
-  font-size: 0.72rem;
-  opacity: 0.85;
-}
-
-#box-stations {
-  background: rgba(66, 135, 245, 0.18);         /* blue tint */
-  border: 1px solid rgba(66, 135, 245, 0.35);
-}
-
-#box-stations.active {
-  background: rgb(52, 111, 207);
-  box-shadow: 0 0 12px rgba(66, 135, 245, 0.45);
-  transform: translateY(-3px);
-}
-
-#box-magnitudes {
-  background: rgba(255, 93, 93, 0.18);          /* red tint */
-  border: 1px solid rgba(255, 93, 93, 0.35);
-}
-
-#box-magnitudes.active {
-  background: rgb(182, 52, 52);
-  box-shadow: 0 0 12px rgba(255, 93, 93, 0.45);
-  transform: translateY(-3px);
-}
-
-.globe-toggle-box:focus {
-  outline: 2px solid rgba(255,255,255,0.25);
-  outline-offset: 2px;
-}
-
-/* Dim inactive globe container */
-.globe-dim {
-  opacity: 0.18 !important;
-  filter: grayscale(0.2);
-  pointer-events: none;
-  transition: opacity 220ms ease;
-}
-
-/* Responsive stacking for mobile */
-@media (max-width: 680px) {
-  .globe-toggle-boxes {
-    flex-direction: column;
-    left: 0.5rem;
-    top: 0.5rem;
-  }
-  .globe-toggle-box {
-    width: 150px;
-    height: 50px;
-  }
-}
 
 /* make sure globes' parent containers are position:relative so toggle panel positions properly */
 .globe-column {
-  margin-top: 60px;
-}
-
-.globe-instruction {
-  font-size: 0.85rem;
-  color: rgb(199, 199, 199);
-  text-align: center;
-  margin-bottom: 0.5rem;
-  bottom: 5rem;
+  margin-top: 40px;
 }
 
 .globe-title1 {
   font-size: 1.2rem;
   font-weight: 600;
   text-align: center;
-  margin-bottom: 0.05rem;
   color: #2f56a2;
 }
 
@@ -447,7 +358,7 @@ section, .hero {
 .globe-column {
   display: flex;
   flex-direction: column;
-  gap: 1rem;     
+  gap: 0.5rem;     
   align-items: center;
 }
 
@@ -455,9 +366,7 @@ section, .hero {
 .globe-container {
   width: 100%;
   max-width: 300px;   
-  height: 340px;      
-  margin: 0;          
-  padding: 0;         
+  height: 300px;                   
   display: flex;
   justify-content: center;
   align-items: center;
@@ -503,6 +412,87 @@ section, .hero {
 
 .legend-labels span { font-size: 10px; }
 
+.globe-toggle-boxes {
+  position: absolute;
+  bottom: -1.8rem;                
+  left: 50%;
+  transform: translateX(-50%); 
+  display: flex;
+  gap: 1rem;
+  z-index: 50;
+  pointer-events: auto;
+}
+
+/* Base card */
+.globe-toggle-box {
+  padding: 10px 18px;
+  width: 100px;          
+  height: 30px;          
+  border-radius: 10px;
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+    flex-direction: column; /* keep this if you have multiple lines of text */
+  justify-content: center; /* vertical centering */
+  align-items: center;     /* horizontal centering */
+  transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease;
+  color: #ffffff;
+  font-weight: 300;
+}
+
+.globe-toggle-box p {
+  margin: 0;
+  font-size: 0.7rem;
+  opacity: 0.85;
+}
+
+#box-stations {
+  background: rgba(66, 135, 245, 0.18);         /* blue tint */
+  border: 1px solid rgba(66, 135, 245, 0.35);
+}
+
+#box-stations.active {
+  background: rgb(52, 111, 207);
+  box-shadow: 0 0 12px rgba(66, 135, 245, 0.45);
+  transform: translateY(-3px);
+}
+
+#box-magnitudes {
+  background: rgba(255, 93, 93, 0.18);          /* red tint */
+  border: 1px solid rgba(255, 93, 93, 0.35);
+}
+
+#box-magnitudes.active {
+  background: rgb(182, 52, 52);
+  box-shadow: 0 0 12px rgba(255, 93, 93, 0.45);
+  transform: translateY(-3px);
+}
+
+.globe-toggle-box:focus {
+  outline: 2px solid rgba(255,255,255,0.25);
+  outline-offset: 2px;
+}
+
+/* Dim inactive globe container */
+.globe-dim {
+  opacity: 0.18;
+  filter: grayscale(0.2);
+  pointer-events: none;
+  transition: opacity 220ms ease;
+}
+
+/* Responsive stacking for mobile */
+@media (max-width: 680px) {
+  .globe-toggle-boxes {
+    flex-direction: column;
+    left: 0.5rem;
+    top: 0.5rem;
+  }
+  .globe-toggle-box {
+    width: 150px;
+    height: 50px;
+  }
+}
 
 #country-detail-section {
   background: linear-gradient(to bottom, #131212, #0f0d0d);
@@ -512,42 +502,42 @@ section, .hero {
   flex-direction: row;
   align-items: stretch;
   gap: 2rem;
-  padding: 2rem;
+  padding: 1.5rem;
   box-sizing: border-box;
 }
 
 /* make the globe column stable and responsive */
 #country-detail-section .globe-column {
-  flex: 0 0 38%;                 /* roughly 38% of row on desktop */
+  position: relative;                /* for absolutely-positioned toggles/legend */
+  flex: 1 1 38%;           /* allow shrinking */
   max-width: 520px;
+  height: calc(100vh - 3rem);        /* viewport minus top/bottom padding (tweak as needed) */
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  justify-content: center;           /* center the pair of globes vertically */
   align-items: center;
-  justify-content: flex-start;
-  position: relative;
+  gap: 0.1rem;
+  margin-top: 0;                     /* remove earlier margin that pushed it down */
 }
 
 /* each globe container is a responsive square where possible */
 #country-detail-section .globe-container {
   width: 100%;
-  aspect-ratio: 1 / 1;          /* keep globe square where supported */
-  max-height: 500px;
-  min-height: 260px;
+  flex: 0 0 calc((100% - 0.8rem) / 2);
+  max-height: calc((100% - 0.8rem) / 2);
+  min-height: 160px;                 /* fallback min height */
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: flex-start;
+  align-items: center;
   position: relative;
   box-sizing: border-box;
   padding: 0.2rem;
-  background: transparent;
 }
 
 /* ensure the SVGs fill their containers */
 #country-detail-section svg#globe-svg,
-#country-detail-section svg#globe-svg-r,
-#country-detail-section svg#globe-svg-2 {
+#country-detail-section svg#globe-svg-r {
   width: 100% !important;
   height: 100% !important;
   display: block;
