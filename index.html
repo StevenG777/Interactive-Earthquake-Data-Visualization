@@ -16,362 +16,355 @@
 
 <body>
 
-<!-- Page 1 (Intro)-->
-<header id="hero" class="hero">
-  <div class="hero-bg"></div> <!-- animated background -->
-  <h1>Shaking Across Scales: Global Earthquake Trends</h1>
-  <p>
-    On a planet of constant motion, hundreds of earthquakes ripple across continents.
-    While regions with dense seimic networks illuminate even the tiniest of tremors, other quakes slip 
-    by unnoticed, and only a fraction make headlines. Is the real fault line hiding not beneath us, 
-    but in the data we rely on? Danger often reflects where the instruments are lacking, not where the earth shakes most.
-  </p>
-</header>
-
-<!-- Page 2 (Anecdote)-->
-<header id="anecdote-section" class="hero">
-  <div class="hero-bg"></div>
-  <h1>May 23rd, 2013</h1>
-  <p> 
-    On this day, I vividly remember experiencing my first severe earthquake. 
-    I was seventeen, sitting at my desk immersed in a video game to pass the time. 
-    My chair suddenly slid backwards, my decorations shook, and cds dropped to the floor. 
-    I initially assumed it was my imagination until the phones of my household immediately issued an 
-    emergency alert warning everyone of a major earthquake. In the minutes that followed, news 
-    reports described the widespread panic as the public scrambled to protect themselves.
-  </p>
-  <p> - Jason Limfueco</p>
-  <p>
-    Today's era of data enforces multiple systems able to swiftly alert the public of a disturbance.
-    We want to share our findings of current scientific knowledge and networks in order to highlight this question:
-    Where are you "safe" from seismic action, and how do we prove this? 
-    We will educate you on mechanics of seismic proportions, and after showing you our findings, we will illustrate the contrapositive stance.
-    In a geoscience context, we apply the following framing: If tectonic activity exists (A), then earthquakes will be recorded in that region (B).
-    Therefore, if earthquakes are not recorded in a region (not B), this may indicate a lack of tectonic activity (not A).
-  </p>
-</header>
-
-<!-- Page 3 (Earth layers)-->
-<section id="earth-structure-section" class="full-page image-page">
-  <h1>Layers of Earth</h1>
-
-  <div class="image-wrap image-hotspot-wrap" id="earth-image-wrap">
-    <img
-      id="earth-structure-img"
-      src="images/earth.PNG"
-      alt="Cross-section illustration of Earth's layers: crust, lithosphere, asthenosphere, mantle, core."
-      loading="lazy"
-    />
-
-    <button class="hotspot invisible" data-name="Crust"
-            data-desc="This is us! It's the solid outermost, rocky layer that contains the continental and oceanic floor." style="left:20%; top:50%;"></button>
-
-    <button class="hotspot invisible" data-name="Lithosphere (li·thuh·sfeer)"
-            data-desc="The outermost rigid mechanical layer that is broken into tectonic plates; these move due to convection currents in the mantle underneath. " style="left:40%; top:50%;"></button>
-
-    <button class="hotspot invisible" data-name="Asthenosphere (uhs·theh·nuh·sfeer)"
-            data-desc="This ductile region of the upper mantle flows slowly; as layers lay atop one another, differing weights cause plains to slowly shift over long time periods. " style="left:55%; top:50%;"></button>
-
-    <button class="hotspot invisible" data-name="Upper Mantle"
-            data-desc="Hot, convecting rock that extends approximately 420 miles deep, making up most of Earth’s volume." style="left:60%; top:50%;"></button>
-
-    <button class="hotspot invisible" data-name="Lower Mantle"
-            data-desc="A middle layer of silicate rock that slowly deforms over geological timescales given the constant immense pressure it endures." style="left:70%; top:50%;"></button>
-
-    <button class="hotspot invisible" data-name="Outer Core"
-            data-desc="Molten iron and nickle that generates the Earth's magnetic field through convection currents; ranges from 72k to 90k degrees Fahrenheit." style="left:75%; top:50%;"></button>
-
-    <button class="hotspot invisible" data-name="Inner Core"
-            data-desc="A solid sphere of approximately 2260 miles in diameter; it endures immense pressure, allowing it to reach temperatures higher than the sun's surface." style="left:83%; top:50%;"></button>
-  </div>
-
-    <div id="earth-layer-info" class="info-box">
-      Hover over or press tab to learn more.
-    </div>
-
-</section>
-
-<!-- Page 4 (Globe 1)-->
-<section id="map-section" class="full-page">
-
-  <div class="map-column">
-    <p class="feature-instruction">Hover over each feature box to display.</p>
-
-    <div id="map-wrapper" style="position: relative; width: 90%; height: 500px;">
-      <!-- SVG -->
-      <svg id="plate-map" width="100%" height="100%"></svg>
-
-      <!-- Default / Feature GIF overlay -->
-      <img id="feature-gif" src="gifs/evolution2.gif" alt="Feature GIF" style="
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-        display: block;
-        pointer-events: none;
-        opacity: 1;
-        transition: opacity 0.25s ease;
-      ">
-    </div>
-  </div>
-
-  <div class="story-column">
-    <div class="story-text">
-      <h1>Why Do Earthquakes Occur?</h1>
-
-      <p>
-        Earthquakes arise from several natural and anthropogenic processes that
-        cause stress to accumulate and release within Earth’s crust. Below are
-        the primary mechanisms that generate seismicity.
-      </p>
-
-      <p class="feature-instruction">Scroll inside each feature box for more details.</p>
-
-      <div class="feature-boxes" aria-live="polite">
-
-        <div class="feature-box">
-          <h3>Plate Tectonics</h3>
-          <p>
-            Divergence, convergence, and transforming of lithospheric tectonic plates accumulates stress at 
-            plate boundaries. These either cumulate to seismic events or are periodically released abruptly as earthquakes.
-          </p>
-        </div>
-
-        <div class="feature-box">
-          <h3>Faults</h3>
-          <p>
-            Planar fractures in the crust where accumulated stress exceed rock strength and stress thresholds. 
-            Elastic energy manifests as an earthquake.</p>
-        </div>
-
-        <div class="feature-box">
-          <h3>Volcanic Activity</h3>
-          <p>
-            Magma movement and fluid pressure changes near volcanoes fracture surrounding rock and can 
-            trigger earthquakes that often precede eruptions.</p>
-        </div>
-
-        <div class="feature-box">
-          <h3>Seismic Waves</h3>
-          <p>
-            Elastic waves including P-waves (primary compressional waves) and S-waves (secondary-shear waves) 
-            transmit distinct propagation velocities that interact with Earth's heterogeneous materials. 
-            These influence the experienced intensity at surface levels.</p>
-        </div>
-
-        <div class="feature-box">
-          <h3>Human-Induced Seismicity</h3>
-          <p>
-            Certain human activities can perturb stress conditions and reactivate nearby faults.
-          </p>
-        </div>
-
-        <div class="feature-box">
-          <h3>Crustal Adjustments</h3>
-          <p>
-            Long-term changes such as post-glacial rebound, sediment loading, or large-scale erosion 
-            can cause the lithosphere to gradually deform, re-stablishing gravitational and isostatic 
-            equilibrium. Such slow readjustments modify the crust's stress fields and may be released 
-            as low-to-moderate magnitude earthquakes.</p>
-        </div>
-
-      </div>
-    </div>
-  </div>
-</section>
-
-
-<!-- Page 4 Globes + Country Search -->
-
-<section id="country-detail-section">
-  <div class="globe-column">
-    
-    <!-- Put these two boxes where you want them to appear (inside .globe-column) -->
-  <div class="globe-toggle-boxes">
-    <div id="box-stations" class="globe-toggle-box active" data-mode="stations" role="button" tabindex="0" aria-pressed="true">
-      <h4>Stations</h4>
-    </div>
-
-    <div id="box-magnitudes" class="globe-toggle-box" data-mode="earthquakes" role="button" tabindex="0" aria-pressed="false">
-      <h4>Magnitudes</h4>
-    </div>
-  </div>
-
-
-    <!-- Top globe -->
-    <div class="globe-container">
-      <div class="globe-title1">Seismic Network Stations</div>
-      <svg id="globe-svg-r"></svg>
-    </div>
-
-    <!-- Bottom globe -->
-    <div class="globe-container">
-      <div class="globe-title2">Earthquake Magnitudes</div>
-      <div class="legend-container">
-        <div class="legend-title">Magnitude</div>
-        <div class="legend-bar"></div>
-        <div class="legend-labels">
-          <span id="legend-max">0</span>
-          <span id="legend-mid">0</span>
-          <span id="legend-min">0</span>
-        </div>
-      </div>
-      <svg id="globe-svg"></svg>
-    </div>
-  </div>
-
-  <div class="country-info">
-    <h2 id="country-name">Search for a country's data.</h2>
-    <div class="country-search">
-      <input type="text" id="country-input" placeholder="Enter a country name...">
-      <button id="country-search-btn">Search</button>
-    </div>
-    <div id="country-info">
-      <p id="country-result">Country info will appear here.</p>
-    </div>
-    <svg id="country-map" width="100%" height="300px"></svg>
-  </div>
-</section>
-
-  <!-- Page 5: California Earthquake Heatmap -->
-<section id="heatmap-section" class="full-page">
-  <h2>California Earthquake Heatmap</h2>
-  <p>Animated heatmap of earthquakes across California over time.</p>
-
-  <div class="heatmap-row">
-    
-    <div class="heatmap-left">
-      <iframe 
-        src="CA_Heatmaps/california_earthquakes_heatmap_animated.html">
-      </iframe>
-    </div>
-
-    <div class="heatmap-features">
-      <div class="feature-box1">
-        <h3>Seismic Hotspots </h3>
-        <p> → Most high-magnitude CA earthquakes occur along the San Andreas fault.</p>
-        <p> → Hotspots reveal where ground is under most stress.</p>  
-      </div>
-      <div class="feature-box1">
-        <h3>Magnitude Distribution</h3>
-        <p> → While most earthquakes are small (M1-M3), minor tremors facilitate in mapping stress
-          along faults.
+    <!-- Page 1 (Intro)-->
+    <header id="hero" class="hero">
+        <div class="hero-bg"></div> <!-- animated background -->
+        <h1>Shaking Across Scales: Global Earthquake Trends</h1>
+        <p>
+            On a planet of constant motion, hundreds of earthquakes ripple across continents.
+            While regions with dense seimic networks illuminate even the tiniest of tremors, other quakes slip 
+            by unnoticed, and only a fraction make headlines. Is the real fault line hiding not beneath us, 
+            but in the data we rely on? Danger often reflects where the instruments are lacking, not where the earth shakes most.
         </p>
-      </div>
-      <div class="feature-box1">
-        <h3>Temporal Trends</h3>
-        <p> → Earthquake activity fluctuates over time; clusters form after major events. </p>
-      </div>
-      <div class="feature-box1">
-        <h3>Temporal Trends</h3>
-        <p> → Earthquake activity fluctuates over time; clusters form after major events. </p>
-      </div>
-    </div>
-  </div>
+    </header>
 
-  <div id="globe-tooltip" 
-     style="
-        position: absolute;
-        pointer-events: none; 
-        background: rgba(0,0,0,0.8); 
-        color: #fff; 
-        padding: 6px 10px; 
-        border-radius: 4px; 
-        font-size: 0.85rem;
-        display: none;
-        z-index: 1000;
-     ">
-</div>
-</section>
-
-<section id="news-section" class="full-page">
-  <h2>Living With Earthquakes</h2>
-  <p>Real experiences, reports, and takeaways for earthquake-prone regions.</p>
-
-  <div class="flip-card-row">
-
-    <div class="flip-card">
-      <div class="flip-card-inner">
-        <div class="flip-card-front card1">
-          <h3>2013 NorCal Earthquake</h3>
-          <p>Jason L Anecdote</p>
-        </div>
-        <div class="flip-card-back">
-          <h2> May 23, 2013</h2>
-          <p>
+    <!-- Page 2 (Anecdote)-->
+    <header id="anecdote-section" class="hero">
+        <div class="hero-bg"></div>
+        <h1>May 23rd, 2013</h1>
+        <p> 
             On this day, I vividly remember experiencing my first severe earthquake. 
             I was seventeen, sitting at my desk immersed in a video game to pass the time. 
-            My chair suddenly slid backward, my decorations shook, cds dropped to the floor. 
-            Although I initially assumed it was my imagination, my phone immediately issued an 
-            emergency alert warning of a major earthquake. In the minutes that followed, news 
-            reports described a widespread panic as the public scrambled to protect themselves.
-          </p>
+            My chair suddenly slid backwards, my decorations shook, and cds dropped to the floor. 
+            I initially assumed it was my imagination until the phones of my household immediately issued an 
+            emergency alert warning everyone of a major earthquake. In the minutes that followed, news 
+            reports described the widespread panic as the public scrambled to protect themselves.
+        </p>
+        <p> - Jason Limfueco</p>
+        <p>
+            Today's era of data enforces multiple systems able to swiftly alert the public of a disturbance.
+            We want to share our findings of current scientific knowledge and networks in order to highlight this question:
+            Where are you "safe" from seismic action, and how do we prove this? 
+            We will educate you on mechanics of seismic proportions, and after showing you our findings, we will illustrate the contrapositive stance.
+            In a geoscience context, we apply the following framing: If tectonic activity exists (A), then earthquakes will be recorded in that region (B).
+            Therefore, if earthquakes are not recorded in a region (not B), this may indicate a lack of tectonic activity (not A).
+        </p>
+    </header>
+
+    <!-- Page 3 (Earth layers)-->
+    <section id="earth-structure-section" class="full-page image-page">
+        <h1>Layers of Earth</h1>
+
+        <div class="image-wrap image-hotspot-wrap" id="earth-image-wrap">
+            <img
+            id="earth-structure-img"
+            src="images/earth.PNG"
+            alt="Cross-section illustration of Earth's layers: crust, lithosphere, asthenosphere, mantle, core."
+            loading="lazy"
+            />
+
+            <button class="hotspot invisible" data-name="Crust"
+                    data-desc="This is us! It's the solid outermost, rocky layer that contains the continental and oceanic floor." style="left:20%; top:50%;"></button>
+
+            <button class="hotspot invisible" data-name="Lithosphere (li·thuh·sfeer)"
+                    data-desc="The outermost rigid mechanical layer that is broken into tectonic plates; these move due to convection currents in the mantle underneath. " style="left:40%; top:50%;"></button>
+
+            <button class="hotspot invisible" data-name="Asthenosphere (uhs·theh·nuh·sfeer)"
+                    data-desc="This ductile region of the upper mantle flows slowly; as layers lay atop one another, differing weights cause plains to slowly shift over long time periods. " style="left:55%; top:50%;"></button>
+
+            <button class="hotspot invisible" data-name="Upper Mantle"
+                    data-desc="Hot, convecting rock that extends approximately 420 miles deep, making up most of Earth’s volume." style="left:60%; top:50%;"></button>
+
+            <button class="hotspot invisible" data-name="Lower Mantle"
+                    data-desc="A middle layer of silicate rock that slowly deforms over geological timescales given the constant immense pressure it endures." style="left:70%; top:50%;"></button>
+
+            <button class="hotspot invisible" data-name="Outer Core"
+                    data-desc="Molten iron and nickle that generates the Earth's magnetic field through convection currents; ranges from 72k to 90k degrees Fahrenheit." style="left:75%; top:50%;"></button>
+
+            <button class="hotspot invisible" data-name="Inner Core"
+                    data-desc="A solid sphere of approximately 2260 miles in diameter; it endures immense pressure, allowing it to reach temperatures higher than the sun's surface." style="left:83%; top:50%;"></button>
         </div>
-      </div>
+
+        <div id="earth-layer-info" class="info-box">
+        Hover over or press tab to learn more.
+        </div>
+    </section>
+
+    <!-- Page 4 Left (Globes)-->
+    <section id="map-section" class="full-page">
+        <div class="map-column">
+            <p class="feature-instruction">Hover over each feature box to display.</p>
+
+            <div id="map-wrapper" style="position: relative; width: 90%; height: 500px;">
+            <!-- SVG -->
+            <svg id="plate-map" width="100%" height="100%"></svg>
+
+            <!-- Default / Feature GIF overlay -->
+            <img id="feature-gif" src="gifs/evolution2.gif" alt="Feature GIF" style="
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+                display: block;
+                pointer-events: none;
+                opacity: 1;
+                transition: opacity 0.25s ease;
+            ">
+            </div>
+        </div>
+
+        <div class="story-column">
+            <div class="story-text">
+            <h1>Why Do Earthquakes Occur?</h1>
+
+            <p>
+                Earthquakes arise from several natural and anthropogenic processes that
+                cause stress to accumulate and release within Earth’s crust. Below are
+                the primary mechanisms that generate seismicity.
+            </p>
+
+            <p class="feature-instruction">Scroll inside each feature box for more details.</p>
+
+            <div class="feature-boxes" aria-live="polite">
+
+                <div class="feature-box">
+                <h3>Plate Tectonics</h3>
+                <p>
+                    Divergence, convergence, and transforming of lithospheric tectonic plates accumulates stress at 
+                    plate boundaries. These either cumulate to seismic events or are periodically released abruptly as earthquakes.
+                </p>
+                </div>
+
+                <div class="feature-box">
+                <h3>Faults</h3>
+                <p>
+                    Planar fractures in the crust where accumulated stress exceed rock strength and stress thresholds. 
+                    Elastic energy manifests as an earthquake.</p>
+                </div>
+
+                <div class="feature-box">
+                <h3>Volcanic Activity</h3>
+                <p>
+                    Magma movement and fluid pressure changes near volcanoes fracture surrounding rock and can 
+                    trigger earthquakes that often precede eruptions.</p>
+                </div>
+
+                <div class="feature-box">
+                <h3>Seismic Waves</h3>
+                <p>
+                    Elastic waves including P-waves (primary compressional waves) and S-waves (secondary-shear waves) 
+                    transmit distinct propagation velocities that interact with Earth's heterogeneous materials. 
+                    These influence the experienced intensity at surface levels.</p>
+                </div>
+
+                <div class="feature-box">
+                <h3>Human-Induced Seismicity</h3>
+                <p>
+                    Certain human activities can perturb stress conditions and reactivate nearby faults.
+                </p>
+                </div>
+
+                <div class="feature-box">
+                <h3>Crustal Adjustments</h3>
+                <p>
+                    Long-term changes such as post-glacial rebound, sediment loading, or large-scale erosion 
+                    can cause the lithosphere to gradually deform, re-stablishing gravitational and isostatic 
+                    equilibrium. Such slow readjustments modify the crust's stress fields and may be released 
+                    as low-to-moderate magnitude earthquakes.</p>
+                </div>
+
+            </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Page 4 Right (Country Search) -->
+    <section id="country-detail-section">
+        <div class="globe-column">
+            
+            <!-- Put these two boxes where you want them to appear (inside .globe-column) -->
+        <div class="globe-toggle-boxes">
+            <div id="box-stations" class="globe-toggle-box active" data-mode="stations" role="button" tabindex="0" aria-pressed="true">
+            <h4>Stations</h4>
+            </div>
+
+            <div id="box-magnitudes" class="globe-toggle-box" data-mode="earthquakes" role="button" tabindex="0" aria-pressed="false">
+            <h4>Magnitudes</h4>
+            </div>
+        </div>
+
+
+            <!-- Top globe -->
+            <div class="globe-container">
+            <div class="globe-title1">Seismic Network Stations</div>
+            <svg id="globe-svg-r"></svg>
+            </div>
+
+            <!-- Bottom globe -->
+            <div class="globe-container">
+            <div class="globe-title2">Earthquake Magnitudes</div>
+            <div class="legend-container">
+                <div class="legend-title">Magnitude</div>
+                <div class="legend-bar"></div>
+                <div class="legend-labels">
+                <span id="legend-max">0</span>
+                <span id="legend-mid">0</span>
+                <span id="legend-min">0</span>
+                </div>
+            </div>
+            <svg id="globe-svg"></svg>
+            </div>
+        </div>
+
+        <div class="country-info">
+            <h2 id="country-name">Search for a country's data.</h2>
+            <div class="country-search">
+            <input type="text" id="country-input" placeholder="Enter a country name...">
+            <button id="country-search-btn">Search</button>
+            </div>
+            <div id="country-info">
+            <p id="country-result">Country info will appear here.</p>
+            </div>
+            <svg id="country-map" width="100%" height="300px"></svg>
+        </div>
+    </section>
+
+    <!-- Page 5: (California Earthquake Heatmap) -->
+    <section id="heatmap-section" class="full-page">
+        <h2>California Earthquake Heatmap</h2>
+        <p>Animated heatmap of earthquakes across California over time.</p>
+
+        <div class="heatmap-row">
+            
+            <div class="heatmap-left">
+            <iframe 
+                src="CA_Heatmaps/california_earthquakes_heatmap_animated.html">
+            </iframe>
+            </div>
+
+            <div class="heatmap-features">
+            <div class="feature-box1">
+                <h3>Seismic Hotspots </h3>
+                <p> → Most high-magnitude CA earthquakes occur along the San Andreas fault.</p>
+                <p> → Hotspots reveal where ground is under most stress.</p>  
+            </div>
+            <div class="feature-box1">
+                <h3>Magnitude Distribution</h3>
+                <p> → While most earthquakes are small (M1-M3), minor tremors facilitate in mapping stress
+                along faults.
+                </p>
+            </div>
+            <div class="feature-box1">
+                <h3>Temporal Trends</h3>
+                <p> → Earthquake activity fluctuates over time; clusters form after major events. </p>
+            </div>
+            <div class="feature-box1">
+                <h3>Temporal Trends</h3>
+                <p> → Earthquake activity fluctuates over time; clusters form after major events. </p>
+            </div>
+            </div>
+        </div>
+
+        <div id="globe-tooltip" 
+            style="
+                position: absolute;
+                pointer-events: none; 
+                background: rgba(0,0,0,0.8); 
+                color: #fff; 
+                padding: 6px 10px; 
+                border-radius: 4px; 
+                font-size: 0.85rem;
+                display: none;
+                z-index: 1000;
+            ">
+        </div>
+    </section>
+
+    <!-- Page 6: (News Info) -->
+    <section id="news-section" class="full-page">
+        <h2>Living With Earthquakes</h2>
+        <p>Real experiences, reports, and takeaways for earthquake-prone regions.</p>
+
+        <div class="flip-card-row">
+
+            <div class="flip-card">
+            <div class="flip-card-inner">
+                <div class="flip-card-front card1">
+                <h3>2013 NorCal Earthquake</h3>
+                <p>Jason L Anecdote</p>
+                </div>
+                <div class="flip-card-back">
+                <h2> May 23, 2013</h2>
+                <p>
+                    On this day, I vividly remember experiencing my first severe earthquake. 
+                    I was seventeen, sitting at my desk immersed in a video game to pass the time. 
+                    My chair suddenly slid backward, my decorations shook, cds dropped to the floor. 
+                    Although I initially assumed it was my imagination, my phone immediately issued an 
+                    emergency alert warning of a major earthquake. In the minutes that followed, news 
+                    reports described a widespread panic as the public scrambled to protect themselves.
+                </p>
+                </div>
+            </div>
+            </div>
+
+            <div class="flip-card">
+            <div class="flip-card-inner">
+                <div class="flip-card-front card2">
+                <h3>Worldwide Stories</h3>
+                <p>Neighborhood Stories</p>
+                </div>
+                <div class="flip-card-back">
+                <h3> April 4th, 2024: 1,000 injured in Taiwan</h2>
+                    https://www.aljazeera.com/news/2024/4/4/taiwan-says-1000-injured-in-earthquake-rescue-efforts-focus-on-hualien
+                <p>Local volunteers share how their neighborhood rebuilt after multiple tremors over the years.</p>
+
+                <h3> April 5th, 2024: </h3>
+                </div>
+            </div>
+            </div>
+
+            <div class="flip-card">
+            <div class="flip-card-inner">
+                <div class="flip-card-front card3">
+                <h3>Early Warning Success</h3>
+                <p>School Alert</p>
+                </div>
+                <div class="flip-card-back">
+                <p>An earthquake early warning system alerted a school in advance, preventing injuries.</p>
+                </div>
+            </div>
+            </div>
+
+            <div class="flip-card">
+            <div class="flip-card-inner">
+                <div class="flip-card-front card4">
+                <h3>Lessons Learned</h3>
+                <p>Building Safety</p>
+                </div>
+                <div class="flip-card-back">
+                <p>Residents describe changes in building practices after past earthquakes, emphasizing safety.</p>
+                </div>
+            </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- JS Script -->
+    <script src="script.js" type="module"></script>
+
+    <!-- Page navigation dots -->
+    <div id="page-nav">
+        <span class="nav-dot" data-target="hero"></span>
+        <span class="nav-dot" data-target="anecdote-section"></span>
+        <span class="nav-dot" data-target="earth-structure-section"></span>
+        <span class="nav-dot" data-target="map-section"></span>
+        <span class="nav-dot" data-target="country-detail-section"></span>
+        <span class="nav-dot" data-target="heatmap-section"></span>
+        <span class="nav-dot" data-target="news-section"></span>
     </div>
-
-    <div class="flip-card">
-      <div class="flip-card-inner">
-        <div class="flip-card-front card2">
-          <h3>Worldwide Stories</h3>
-          <p>Neighborhood Stories</p>
-        </div>
-        <div class="flip-card-back">
-          <h3> April 4th, 2024: 1,000 injured in Taiwan</h2>
-            https://www.aljazeera.com/news/2024/4/4/taiwan-says-1000-injured-in-earthquake-rescue-efforts-focus-on-hualien
-          <p>Local volunteers share how their neighborhood rebuilt after multiple tremors over the years.</p>
-
-          <h3> April 5th, 2024: </h3>
-        </div>
-      </div>
-    </div>
-
-    <div class="flip-card">
-      <div class="flip-card-inner">
-        <div class="flip-card-front card3">
-          <h3>Early Warning Success</h3>
-          <p>School Alert</p>
-        </div>
-        <div class="flip-card-back">
-          <p>An earthquake early warning system alerted a school in advance, preventing injuries.</p>
-        </div>
-      </div>
-    </div>
-
-    <div class="flip-card">
-      <div class="flip-card-inner">
-        <div class="flip-card-front card4">
-          <h3>Lessons Learned</h3>
-          <p>Building Safety</p>
-        </div>
-        <div class="flip-card-back">
-          <p>Residents describe changes in building practices after past earthquakes, emphasizing safety.</p>
-        </div>
-      </div>
-    </div>
-
-  </div>
-</section>
-
-  <!-- JS -->
-  <script src="script.js" type="module"></script>
-
-  <!-- Page navigation dots -->
-<div id="page-nav">
-  <span class="nav-dot" data-target="hero"></span>
-  <span class="nav-dot" data-target="anecdote-section"></span>
-  <span class="nav-dot" data-target="earth-structure-section"></span>
-  <span class="nav-dot" data-target="map-section"></span>
-  <span class="nav-dot" data-target="country-detail-section"></span>
-  <span class="nav-dot" data-target="heatmap-section"></span>
-  <span class="nav-dot" data-target="news-section"></span>
-</div>
-
 
 </body>
 </html>
-
-
-I tried to navigate from page 1 to 5, which goes through page 3 in between, and it will fixate on page 3. Every navigate range contains page 3 in-between, the issue arise. But if you navigate start at page 3 or end at page 3, it will be fine, why is that?

@@ -15,7 +15,7 @@ html, body {
     -moz-osx-font-smoothing: grayscale;
 }
 
-body {
+html {
   scroll-snap-type: y mandatory;
   scroll-behavior: smooth;
   overflow-x: hidden;
@@ -24,8 +24,10 @@ body {
 
 section, .hero {
     scroll-snap-align: start;
+    height: 100vh;
     min-height: 100vh;       /* full viewport height */
     width: 100vw;
+    min-width: 100vw;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -137,14 +139,11 @@ section, .hero {
 /* PAGE 2 (Earth layers) */
 /* ========================== */
 #earth-structure-section {
-    background: linear-gradient(to bottom, #272626, #1e1e1e);
-    color: #fff;
-    position: relative;
-    padding: 2rem;
-}
-
-#earth-structure-section {
-  height: 120vh;
+  background: linear-gradient(to bottom, #272626, #1e1e1e);
+  color: #fff;
+  position: relative;
+  padding: 2rem;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -207,7 +206,7 @@ section, .hero {
 #map-section {
   background: linear-gradient(to bottom, #1e1e1e, #131212);
   width: 100%;
-  min-height: 120vh;
+  min-height: 100vh;
   display: flex;
   flex-direction: row;
   align-items: flex-start;

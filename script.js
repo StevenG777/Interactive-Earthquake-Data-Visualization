@@ -419,7 +419,6 @@ const drag_behavior = d3.drag()
         lastY1 = event.y;
     })
 
-
 plotBaseSphere(svg1, sphereData, 'globe-sphere1')
 svg1.call(drag_behavior)          // <-- fix here
 plotCountriesRegions(svg1, countryData, 'country1')
@@ -723,19 +722,6 @@ d3.json("https://unpkg.com/world-atlas@2/countries-110m.json").then(worldData =>
 }).catch(err => {
   console.error("Failed to load world data:", err);
 });
-
-// countriesFeatureData = topojson.feature(countriesData, worldData.objects.countries).features;
-// countriesGroup2.selectAll(".country2")
-//     .data(countriesFeatureData)
-//     .enter()
-//     .append("path")
-//     .attr("class", "country2")
-//     .attr("fill", DEFAULT_FILL)
-//     .attr("stroke", "#fff")
-//     .attr("stroke-width", 0.5)
-//     .attr("d", path2);
-// resizeGlobe1(svg2, path2, projection2,'globe-sphere2', 'country2');
-
 
 function sameFeature(a, b) {
   if (!a || !b) return false;
