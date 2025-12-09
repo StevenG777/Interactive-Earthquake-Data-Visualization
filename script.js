@@ -74,7 +74,7 @@ const tooltip = d3.select("#globe-tooltip");
 // DOT FOR PAGES
 // ==========================
 const dots = document.querySelectorAll(".nav-dot");
-const sections = document.querySelectorAll("section, header.hero, header.anecdote");
+const sections = document.querySelectorAll("section, header.hero");
 
 const updateActiveDot = () => {
     let closestDot = null;
@@ -93,33 +93,34 @@ const updateActiveDot = () => {
         const rect = targetEl.getBoundingClientRect();
         const distance = Math.abs(rect.top);
 
-        // Correct comparison: update closestDot if this section is nearer
-        if (distance < closestDistance) {
-            closestDistance = distance;
-            closestDot = dot;
-        }
+        closestDistance = Math.min(distance, closestDistance);
+        closestDot = distance < closestDistance ? dot : closestDot;
     });
 
     if (closestDot) {
-        // Reset all dots & activate the closest one
+        // Reset all dot & Activate the selected dot
         dots.forEach(d => d.classList.remove("active"));
         closestDot.classList.add("active");
     }
 };
 
 
+
 const observer = new IntersectionObserver(
-  entries => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        const id = entry.target.id;
-        dots.forEach(dot => {
-          dot.classList.toggle("active", dot.dataset.target === id);
+    (entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const id = entry.target.id;
+                dots.forEach(dot => {
+                    dot.classList.toggle("active", dot.dataset.target === id);
+                });
+            }
         });
-      }
-    });
-  },
-  { threshold: 0.5 }
+
+    }, 
+    { 
+        threshold: 0.5  
+    }
 );
 
 dots.forEach(dot => {
@@ -128,7 +129,7 @@ dots.forEach(dot => {
 
     dot.addEventListener("click", () => {
         if (targetEl) {
-            targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            targetEl.scrollIntoView({ behavior: "smooth" });
             // highlight immediately
             dots.forEach(d => d.classList.remove("active"));
             dot.classList.add("active");
@@ -163,30 +164,7 @@ function scrollToPageOnClick(dots) {
 }
 
 // Activate dot when you scroll page (Func Definer)
-function activateClosestDotOnScroll(dots) {
-    let closestDot = null;
-    let closestDistance = Infinity;
 
-    dots.forEach(dot => {
-        // Get target element based on dot
-        const targetId = dot.getAttribute("data-target");
-        const targetEl = document.getElementById(targetId);
-        if (!targetEl) return;
-
-        // Calculate distance between the top of current page and top of view port
-        const rect = targetEl.getBoundingClientRect();
-        const distance = Math.abs(rect.top);
-
-        closestDistance = Math.min(distance, closestDistance);
-        closestDot = distance < closestDistance ? dot : closestDot;
-    });
-
-    if (closestDot) {
-        // Reset all dot & Activate the selected dot
-        dots.forEach(d => d.classList.remove("active"));
-        closestDot.classList.add("active");
-    }
-};
 
 // Click dot to navigate pages, and activate closest dot through scrolling
 function initDotSroll() {
