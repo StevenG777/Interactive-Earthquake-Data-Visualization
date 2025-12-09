@@ -165,6 +165,8 @@ const heroObserver = new IntersectionObserver(entries => {
 // Observe each hero
 heroes.forEach(hero => heroObserver.observe(hero));
 
+
+
 // ==========================
 // PAGE 2
 // ==========================
