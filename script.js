@@ -74,7 +74,7 @@ const tooltip = d3.select("#globe-tooltip");
 // DOT FOR PAGES
 // ==========================
 const dots = document.querySelectorAll(".nav-dot");
-const sections = document.querySelectorAll("section, header.hero");
+const sections = document.querySelectorAll("section, header.hero, header.anecdote");
 
 const updateActiveDot = () => {
     let closestDot = null;
@@ -177,15 +177,12 @@ function activateClosestDotOnScroll(dots) {
         const rect = targetEl.getBoundingClientRect();
         const distance = Math.abs(rect.top);
 
-        // When new page arrives, it will have the smaller diff distance and become the closest dot
-        if (distance < closestDistance) {
-            closestDistance = distance;
-            closestDot = dot;
-        }
+        closestDistance = Math.min(distance, closestDistance);
+        closestDot = distance < closestDistance ? dot : closestDot;
     });
 
-    // Reset all dots & Activate the closest dot
     if (closestDot) {
+        // Reset all dot & Activate the selected dot
         dots.forEach(d => d.classList.remove("active"));
         closestDot.classList.add("active");
     }
@@ -229,8 +226,6 @@ const heroObserver = new IntersectionObserver(entries => {
 
 // Observe each hero
 heroes.forEach(hero => heroObserver.observe(hero));
-
-
 
 // ==========================
 // PAGE 2
