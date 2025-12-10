@@ -6,9 +6,7 @@
 async function loadCSV(path, sampleSize = null) {
   
     const response = await fetch(path);
-    // Extract the content
     const csvText = await response.text();
-
 
     const result = Papa.parse(csvText, {
         header: true,
@@ -76,7 +74,6 @@ const tooltip = d3.select("#globe-tooltip");
 const dots = document.querySelectorAll(".nav-dot");
 const sections = document.querySelectorAll(".full-page");
 
-
 const updateActiveDot = () => {
     let closestDot = null;
     let closestDistance = Infinity;
@@ -100,7 +97,6 @@ const updateActiveDot = () => {
         closestDot.classList.add("active");
     }
 };
-
 
 const observer = new IntersectionObserver(
     (entries) => {
@@ -138,7 +134,6 @@ window.addEventListener("scroll", updateActiveDot);
 window.addEventListener("resize", updateActiveDot);
 sections.forEach(section => observer.observe(section));
 
-
 // ==========================
 // SNAP SCROLLING
 // ==========================
@@ -159,9 +154,6 @@ function scrollToPageOnClick(dots) {
     });
 }
 
-// Activate dot when you scroll page (Func Definer)
-
-
 // Click dot to navigate pages, and activate closest dot through scrolling
 function initDotSroll() {
     // Get all dots and sections
@@ -176,13 +168,10 @@ function initDotSroll() {
 initDotSroll();
 
 // ================================
-// PAGE 1 
+// PAGE 1 (Intro)
 // ================================
-
-// Select ALL hero sections
 const heroes = document.querySelectorAll('.hero');
 
-// Intersection Observer to trigger animation on scroll
 const heroObserver = new IntersectionObserver(entries => {
   entries.forEach(entry => {
     if (entry.isIntersecting) {
@@ -198,13 +187,11 @@ const heroObserver = new IntersectionObserver(entries => {
   });
 }, { threshold: 0.25 }); // lower threshold to 25%
 
-// Observe each hero
 heroes.forEach(hero => heroObserver.observe(hero));
 
 // ==========================
-// PAGE 2
+// PAGE 2 (Anecdote)
 // ==========================
-// Ripple parallax movement
 // Ripple parallax movement
 (function() {
   const bg = document.querySelector('.anecdote .ripple');
@@ -249,7 +236,7 @@ anecdoteObserver.observe(anecdote);
 })();
 
 // ==========================
-// PAGE 3
+// PAGE 3 (Earth Layers)
 // ==========================
 
 function initHotspots() {
@@ -387,7 +374,7 @@ if (document.readyState === "loading") {
 
 
 // =================================
-// PAGE 4
+// PAGE 4 (Why Earthquakes Occur)
 // =================================
 
 const featureGIFs = {
@@ -418,9 +405,10 @@ featureBoxes.forEach(box => {
   });
 });
 // ==========================
-// PAGE 5 (2 Globes + Country)
+// PAGE 5 (2 Globes + Zoomed Country)
 // ==========================
-// VARIABLE INITIALIZATION ----------------------------------------------------
+
+/* Globe Column */
 const svg1 = d3.select("#globe-svg");
 const svg1R = d3.select("#globe-svg-r");
 
@@ -449,7 +437,6 @@ let rotate1 = [0, -20];
 let lastX1, lastY1;
 // ----------------------------------------------------------------------------
 
-// FUNCTION CALLING -----------------------------------------------------------
 // Handle DRAG ROTATION INTERACTIONS (Func Definer, Func Caller & Callback)
 // D3 Built-in Interactions:
     // Brush, Dispatch, Drag, Zoom
@@ -512,7 +499,6 @@ plotStationsPoints(svg1R, stationData)
 resizeGlobe1(svg1R, path1R, projection1R, 'globe-sphere1R', 'country1R');
 // ----------------------------------------------------------------------------
 
-// FUNCTION DEFINITION --------------------------------------------------------
 // Function to plot empty dark with white outline globe (Func Definer)
 function plotBaseSphere(selection, data, idName) {
     selection.append("path")
@@ -731,7 +717,6 @@ function plotStationsOnGlobe(feature = null) {
       if (typeof tooltip !== "undefined") tooltip.style("display","none");
     });
 
-  // ENTER + UPDATE: set position and visibility
   sel.merge(enter)
     .attr("transform", d => {
       const p = projection2([d.longitude, d.latitude]) || [-9999, -9999];
@@ -856,12 +841,9 @@ function resizeGlobe1(selection, pathFunc, projectionFunc, idNameSphere, classNa
     updateEarthquakes();
     updateStations();
 }
-// ----------------------------------------------------------------------------
 
-/* Country */
+/* Country Column */
 
-
-// Select DOM elements
 const svg2 = d3.selectAll("#globe-svg-r, #globe-svg");
 const countryMapSvg = d3.select("#country-map");
 
@@ -954,7 +936,6 @@ function drawCountryMap(feature) {
       });
   }
 
-  // Draw earthquakes if active
   if ((activeLayer === "earthquakes" || activeLayer === "both") && earthquakeData?.length) {
     const quakes = earthquakeData.filter(d => d3.geoContains(feature, [d.longitude, d.latitude]));
     const gQuakes = countryMapSvg.append("g").attr("class", "earthquakes-map");
@@ -1018,7 +999,6 @@ function updateCountryView() {
     plotEarthquakesOnGlobe(selectedCountry);
   }
 
-  // Update result text to reflect activeLayer
   const name = selectedCountry.properties?.name || selectedCountry.properties?.admin || "Selected country";
   let resultText = "";
   if (activeLayer === "stations") resultText = `${name}: ${stations.length} stations`;
@@ -1070,6 +1050,7 @@ if (btn && inputEl) {
     if (e.key === "Enter") { e.preventDefault(); handleCountrySearch(inputEl.value); }
   });
 }
+
 /* -------------------------
    Box toggles for dual-globe view (stations / earthquakes)
 ------------------------- */
@@ -1077,7 +1058,6 @@ const toggleButtons = document.querySelectorAll(".toggle-btn");
 const boxStations = document.getElementById("box-stations");
 const boxMagnitudes = document.getElementById("box-magnitudes");
 
-// Grab globe containers
 const globeContainers = document.querySelectorAll(".globe-container");
 const topGlobe = globeContainers[0];      // top globe (stations)
 const bottomGlobe = globeContainers[1]; 
@@ -1095,11 +1075,9 @@ function applyActiveBox(mode) {
   topGlobe.classList.toggle("globe-dim", mode !== "stations");
   bottomGlobe.classList.toggle("globe-dim", mode !== "earthquakes");
 
-  // Generic visual updates (keeps any other code paths working)
   if (typeof updateGlobePoints === "function") updateGlobePoints();
 
   // If a country is selected, re-run the unified country redraw so the newly
-  // active layer is shown for that same selectedCountry.
   if (selectedCountry) {
     updateCountryView();
   } else {
@@ -1113,8 +1091,6 @@ function applyActiveBox(mode) {
   }
 }
 
-
-// Event listeners for toggle boxes
 boxStations.addEventListener("click", () => applyActiveBox("stations"));
 boxMagnitudes.addEventListener("click", () => applyActiveBox("earthquakes"));
 
@@ -1128,11 +1104,10 @@ boxMagnitudes.addEventListener("click", () => applyActiveBox("earthquakes"));
   });
 });
 
-// Initialize
 applyActiveBox(activeLayer);
 
 // ==========================
-// PAGE 7 (Flip Cards)
+// PAGE 7 (News)
 // ==========================
 
 document.addEventListener("DOMContentLoaded", () => {
