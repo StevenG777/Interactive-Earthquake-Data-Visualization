@@ -916,12 +916,18 @@ section, header.hero {
   padding: 1rem;
   box-sizing: border-box;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .flip-card-front {
   color: #fff;
   background-size: cover;
   background-position: center;
+}
+
+.flip-card-back a {
+  color: #fff;            /* sets text to white */
+  text-decoration: underline; /* optional: keeps the underline */
 }
 
 .flip-card-front.card1 { background-image: url('images/flipcard1.jpg'); }
@@ -935,6 +941,11 @@ section, header.hero {
   transform: rotateY(180deg);
   font-size: 0.9rem;
   text-align: center;
+
+  /* ADD THESE */
+  backface-visibility: hidden;
+  overflow-y: auto;         /* prevents text overflow */
+  padding: 1rem;            /* optional but helps spacing */
 }
 
 /* hover flip for desktop */
