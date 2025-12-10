@@ -559,7 +559,7 @@ function plotCountriesRegions(selection, data, className, highlightColor = "#215
 }
 
 // Function to plot earthquake spot to globe & Handle TOOLTIP HOVER INTERACTIONS (Func Definer)
-function plotEarthquakesPoints(selection, data) {
+function plotEarthquakesPoints(selection, data, proj) {
     const minMag = d3.min(data, d => d.mag);
     const maxMag = d3.max(data, d => d.mag);
     const GradColor = d3.scaleLinear()
@@ -689,6 +689,107 @@ function plotStationsPoints(selection, data) {
         });
 }
 
+function plotStationsOnGlobe(feature = null) {
+  if (!stationData) return;
+
+  const stationsToShow = feature
+    ? stationData.filter(d => d3.geoContains(feature, [d.longitude, d.latitude]))
+    : [];
+
+  const sel = globeStationsGroup.selectAll(".globe-station")
+    .data(stationsToShow, d => d["station code"] || `${d.longitude},${d.latitude}`);
+
+  sel.exit().remove();
+
+  const enter = sel.enter()
+    .append("path")
+    .attr("class", "globe-station")
+    .attr("d", triSymbol)
+    .attr("fill", "#2aa3ff")
+    .attr("stroke", "#fff")
+    .attr("stroke-width", 0.8)
+    .attr("opacity", 0)
+    .on("mouseover", function(event, d) {
+      d3.select(this)
+        .transition().duration(120)
+        .attr("transform", () => {
+          const p = projection2([d.longitude, d.latitude]);
+          return `translate(${p[0]},${p[1]}) scale(1.4)`;
+        })
+        .attr("fill", "#0033a0");
+      if (typeof tooltip !== "undefined") {
+        tooltip.html(`<strong>${d["station code"]||""}</strong><br>${d.name||""}`)
+          .style("display","block")
+          .style("left",(event.pageX+10)+"px")
+          .style("top",(event.pageY+10)+"px");
+      }
+    })
+    .on("mouseout", function(event, d) {
+      d3.select(this)
+        .transition().duration(120)
+        .attr("transform", () => {
+          const p = projection2([d.longitude, d.latitude]);
+          return `translate(${p[0]},${p[1]}) scale(1)`;
+        })
+        .attr("fill", "#2aa3ff");
+      if (typeof tooltip !== "undefined") tooltip.style("display","none");
+    });
+
+  // ENTER + UPDATE: set position and visibility
+  sel.merge(enter)
+    .attr("transform", d => {
+      const p = projection2([d.longitude, d.latitude]) || [-9999, -9999];
+      return `translate(${p[0]},${p[1]}) scale(1)`;
+    })
+    .attr("opacity", d => {
+      // hide triangles on back hemisphere
+      const λ = d.longitude * Math.PI/180;
+      const φ = d.latitude * Math.PI/180;
+      const rot = projection2.rotate ? projection2.rotate() : [0,0,0];
+      const λ0 = -rot[0] * Math.PI/180;
+      const φ0 = -rot[1] * Math.PI/180;
+      const cosc = Math.sin(φ0)*Math.sin(φ) + Math.cos(φ0)*Math.cos(φ)*Math.cos(λ-λ0);
+      return cosc > 0 ? 0.95 : 0;
+    });
+}
+
+function plotEarthquakesOnGlobe(countryFeature, quakeList = null) {
+  const quakes = quakeList || (earthquakeData || []);
+
+  // ensure group exists on the left/bottom globe svg (svg1 as in your code)
+  const g = svg1.select("g.earthquakes").empty()
+    ? svg1.append("g").attr("class","earthquakes")
+    : svg1.select("g.earthquakes");
+
+  // color scale similar to your plotEarthquakesPoints
+  const minMag = d3.min(earthquakeData || [], d => d.mag) || 0;
+  const maxMag = d3.max(earthquakeData || [], d => d.mag) || 5;
+  const GradColor = d3.scaleLinear().domain([minMag, maxMag]).range(["#EB776C","#E31F07"]).interpolate(d3.interpolateLab);
+
+  const sel = g.selectAll("circle.quake")
+    .data(earthquakeData || [], d => (d.id || (d.longitude + "|" + d.latitude + "|" + d.mag)));
+
+  // enter
+  sel.enter()
+    .append("circle")
+    .attr("class","quake")
+    .attr("stroke","#fff")
+    .attr("stroke-width",0.3)
+    .merge(sel)
+    .each(function(d) {
+      const inside = countryFeature && d3.geoContains(countryFeature, [d.longitude, d.latitude]);
+      const p = projection1([d.longitude, d.latitude]) || [-9999, -9999];
+      d3.select(this)
+        .attr("cx", p[0])
+        .attr("cy", p[1])
+        .attr("r", Math.sqrt(Math.abs(d.mag || 0)) * 2)
+        .attr("fill", GradColor(d.mag || minMag))
+        .attr("opacity", inside ? 0.8 : 0);
+    });
+
+  sel.exit().remove();
+}
+
 // Function to update earthquakes on rotation or resize (Func Definer)
 function updateEarthquakes() {
     svg1.selectAll(".earthquakes circle")
@@ -765,9 +866,6 @@ function resizeGlobe1(selection, pathFunc, projectionFunc, idNameSphere, classNa
 
 
 // Select DOM elements
-/* -------------------------
-   Global selections & state
-------------------------- */
 const svg2 = d3.selectAll("#globe-svg-r, #globe-svg");
 const countryMapSvg = d3.select("#country-map");
 
@@ -871,7 +969,7 @@ function drawCountryMap(feature) {
       .append("circle")
       .attr("cx", d => projection([d.longitude, d.latitude])[0])
       .attr("cy", d => projection([d.longitude, d.latitude])[1])
-      .attr("r", d => Math.sqrt(d.magnitude)*2)
+      .attr("r", d => Math.sqrt(d.mag)*2)
       .attr("fill", "orange")
       .attr("stroke", "#fff")
       .attr("stroke-width", 0.5)
@@ -879,7 +977,7 @@ function drawCountryMap(feature) {
       .on("mouseover", (event, d) => {
         d3.select(event.currentTarget).attr("stroke-width", 2);
         if (tooltip) tooltip
-          .html(`<strong>Magnitude:</strong> ${d.magnitude}<br>${d.place||""}`)
+          .html(`<strong>Magnitude:</strong> ${d.mag}<br>${d.place||""}`)
           .style("display","block")
           .style("left",(event.pageX+10)+"px")
           .style("top",(event.pageY+10)+"px");
@@ -907,6 +1005,7 @@ function drawCountryMap(feature) {
 /* -------------------------
    Unified country update
 ------------------------- */
+
 function updateCountryView() {
   if (!selectedCountry) return;
   drawCountryMap(selectedCountry);
@@ -923,11 +1022,14 @@ function updateCountryView() {
     plotEarthquakesOnGlobe(selectedCountry);
   }
 
-  // Update result text
-  const stations = stationData?.filter(d => d3.geoContains(selectedCountry,[d.longitude,d.latitude])) || [];
-  const quakes = earthquakeData?.filter(d => d3.geoContains(selectedCountry,[d.longitude,d.latitude])) || [];
+  // Update result text to reflect activeLayer
   const name = selectedCountry.properties?.name || selectedCountry.properties?.admin || "Selected country";
-  d3.select("#country-result").text(`${name}: ${stations.length} stations, ${quakes.length} earthquakes`);
+  let resultText = "";
+  if (activeLayer === "stations") resultText = `${name}: ${stations.length} stations`;
+  else if (activeLayer === "earthquakes") resultText = `${name}: ${quakes.length} earthquakes`;
+  else resultText = `${name}: ${stations.length} stations, ${quakes.length} earthquakes`;
+
+  d3.select("#country-result").text(resultText);
 }
 
 /* -------------------------
@@ -997,11 +1099,24 @@ function applyActiveBox(mode) {
   topGlobe.classList.toggle("globe-dim", mode !== "stations");
   bottomGlobe.classList.toggle("globe-dim", mode !== "earthquakes");
 
-  // Update your globe data visualizations (assuming functions exist)
+  // Generic visual updates (keeps any other code paths working)
   if (typeof updateGlobePoints === "function") updateGlobePoints();
-  if (mode === "stations" && typeof plotStationsOnGlobe === "function") plotStationsOnGlobe();
-  if (mode === "earthquakes" && typeof updateEarthquakes === "function") updateEarthquakes();
+
+  // If a country is selected, re-run the unified country redraw so the newly
+  // active layer is shown for that same selectedCountry.
+  if (selectedCountry) {
+    updateCountryView();
+  } else {
+    // No country selected: ensure globe-only toggles still update the globes
+    if (mode === "stations" && typeof plotStationsOnGlobe === "function") {
+      plotStationsOnGlobe();
+    }
+    if (mode === "earthquakes" && typeof updateEarthquakes === "function") {
+      updateEarthquakes();
+    }
+  }
 }
+
 
 // Event listeners for toggle boxes
 boxStations.addEventListener("click", () => applyActiveBox("stations"));
