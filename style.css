@@ -505,6 +505,12 @@ section, header.hero {
 /* PAGE 5 (2 Globes + Zoomed Country) */
 /* ========================== */
 
+.feature-instruction1 { 
+  font-size: 0.75rem; 
+  color: #ffffff;
+  gap: 0.1rem;
+}
+
 /* make sure globes' parent containers are position:relative so toggle panel positions properly */
 .globe-column {
   margin-top: 0px;
